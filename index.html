@@ -6,6 +6,15 @@
 <meta name="theme-color" content="#173f24">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="HuertaVarela"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', { scope: './' })
+      .then(reg => console.log('SW registrado con éxito:', reg.scope))
+      .catch(err => console.log('Error al registrar SW:', err));
+  });
+}
+</script>
 <link rel="manifest" id="mf" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="">
 <title>Mi huerta en Varela</title>
@@ -697,7 +706,6 @@ let dp=null;const bar=document.getElementById('pwaBar'),btn=document.getElementB
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;bar.classList.remove('hide')});
 btn.onclick=async()=>{if(!dp)return;dp.prompt();try{await dp.userChoice}catch(_){}dp=null;bar.classList.add('hide')};
 window.addEventListener('appinstalled',()=>bar.classList.add('hide'));
-if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
 }catch(e){}})();
 </script>
 </body>
