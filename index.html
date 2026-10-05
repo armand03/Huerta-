@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#173f24">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="HuertaVarela"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" id="mf" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="">
+<title>Mi huerta en Varela</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2e8;--card:#fff;--ink:#1f2a1c;--mut:#5b6a57;--line:#d5dccb;--hd:#24562f;--hdi:#f3f7ee;
+--ok:#2e8b3d;--mid:#d9a21b;--no:#c0453a;--g1:#d4572f;--g2:#e0a526;--g3:#3b9a55;--g4:#7a5bb5;--g5:#4f7fa8;--g6:#8a7a62;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141b12;--card:#1e271b;--ink:#e8efe3;--mut:#9fb099;--line:#334030;--hd:#0f2a15;--hdi:#e8efe3}}
+:root[data-theme="dark"]{--bg:#141b12;--card:#1e271b;--ink:#e8efe3;--mut:#9fb099;--line:#334030;--hd:#0f2a15;--hdi:#e8efe3}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 'Source Sans 3',system-ui,sans-serif}
+header{background:var(--hd);color:var(--hdi);padding:28px 18px 20px}
+h1{font:800 clamp(28px,6vw,44px)/1.05 'Bricolage Grotesque',sans-serif;margin:0 0 6px}
+header p{margin:0;opacity:.85;max-width:60ch}
+.wrap{max-width:1100px;margin:0 auto}
+nav{display:flex;gap:8px;flex-wrap:wrap;padding:14px 18px 0}
+nav button,.chip{font:600 15px 'Source Sans 3',sans-serif;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 16px;cursor:pointer}
+nav button[aria-selected=true]{background:var(--ok);border-color:var(--ok);color:#fff}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--mid);outline-offset:2px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:14px 18px}
+input{flex:1 1 180px;font:16px inherit;padding:9px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.leg{padding:0 18px;color:var(--mut);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;padding:6px 18px 30px}
+.card{background:var(--card);border:1px solid var(--line);border-left:7px solid var(--c,var(--ok));border-radius:12px;padding:14px 16px}
+.card h3{font:800 20px 'Bricolage Grotesque',sans-serif;margin:0}
+.tag{display:inline-block;font-size:13px;font-weight:600;color:#fff;background:var(--c);border-radius:6px;padding:1px 8px;margin:4px 0 8px}
+.pl{display:flex;gap:8px;margin:6px 0 10px}
+.pl span{flex:1;border-radius:8px;padding:6px 8px;font-size:14px;font-weight:600;border:1.5px solid var(--s)}
+.pl small{display:block;font-weight:400;color:var(--mut);font-size:12.5px}
+dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:14.5px}
+dt{color:var(--mut)}dd{margin:0}
+.pest{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);font-size:14px}
+.pest b{color:var(--no)}
+.s-y{--s:var(--ok)}.s-m{--s:var(--mid)}.s-n{--s:var(--no)}
+.tbl{overflow-x:auto;padding:0 18px 20px}
+table{border-collapse:collapse;width:100%;min-width:560px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:9px 10px;text-align:left;font-size:14.5px}
+th{background:var(--hd);color:var(--hdi)}
+td.g{color:#fff;font-weight:600}
+h2{font:800 22px 'Bricolage Grotesque',sans-serif;margin:18px 18px 6px}
+.note{padding:0 18px 12px;color:var(--mut);font-size:14.5px;max-width:75ch}
+.hide{display:none}
+details{margin-top:10px;font-size:14px}summary{cursor:pointer;font-weight:600;color:var(--ok)}details dl{margin-top:8px;font-size:14px}
+select{font:15px inherit;padding:9px 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.nm{display:inline-block;margin:2px 4px 2px 0;padding:2px 9px;border-radius:999px;background:var(--bg);border:1px solid var(--line);font-size:14px}
+.bd{height:7px;border-radius:4px;background:var(--line);margin:6px 0}.bd i{display:block;height:100%;border-radius:4px;background:var(--ok)}
+.tk{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.tk input{width:20px;height:20px;flex:none;margin-top:2px}.tk.ok span{text-decoration:line-through;color:var(--mut)}.tk b{display:block}
+.del{float:right;border:0;background:none;color:var(--no);font-weight:600;cursor:pointer}
+/* ===== FUSIÓN VISUAL v11 — interfaz móvil y escritorio ===== */
+:root{--accent:#2f7d46;--accent2:#65a95a;--gold:#e6a72c;--shadow:0 10px 30px rgba(31,42,28,.08)}
+body{background:radial-gradient(circle at 10% 0%,rgba(101,169,90,.10),transparent 28rem),var(--bg)}
+header{position:relative;overflow:hidden;padding:30px 18px 24px;background:linear-gradient(135deg,#173f24 0%,#245f35 55%,#2f7d46 100%);box-shadow:0 8px 30px rgba(20,55,30,.18)}
+header:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;right:-90px;top:-150px;background:rgba(255,255,255,.08)}
+.header-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;position:relative;z-index:1}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+.header-actions button{border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.10);color:#fff;border-radius:999px;padding:8px 12px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px)}
+.wrap{max-width:1180px}
+nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:10px 18px;box-shadow:0 5px 20px rgba(0,0,0,.04)}
+nav button{transition:.18s transform,.18s box-shadow}nav button:hover{transform:translateY(-1px)}nav button[aria-selected=true]{box-shadow:0 5px 14px rgba(46,139,61,.18)}
+.grid{gap:18px}.card{border-radius:18px;padding:18px;box-shadow:var(--shadow);transition:transform .18s ease,box-shadow .18s ease;overflow:hidden}.card:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(31,42,28,.12)}.card h3{font-size:21px;letter-spacing:-.2px}.tag{border-radius:999px;padding:3px 10px}.pl span{border-radius:11px}
+details{border:1px solid var(--line);border-radius:12px;padding:9px 11px;background:var(--bg)}details summary{list-style:none}details summary::-webkit-details-marker{display:none}details summary:before{content:"＋";display:inline-block;margin-right:6px;font-weight:900}details[open] summary:before{content:"−"}
+.tech-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:9px}.tech-item{padding:8px 9px;border-radius:10px;background:var(--bg);border:1px solid var(--line);font-size:13px}.tech-item b{display:block;font-size:11px;text-transform:uppercase;color:var(--mut);letter-spacing:.04em}.tech-wide{grid-column:1/-1}
+.hero{margin:16px 18px 8px;padding:18px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,var(--card),var(--bg));box-shadow:var(--shadow)}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.hero h2{margin:0 0 4px;font-size:26px}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}.kpi strong{display:block;font-size:23px}.kpi span{font-size:12px;color:var(--mut)}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.quick button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:12px;border-radius:13px;text-align:left;font-weight:700;cursor:pointer}.quick button small{display:block;color:var(--mut);font-weight:400;margin-top:2px}
+.status-pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 10px;background:var(--bg);font-size:13px;font-weight:700}.status-dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.month-card{margin:8px 18px 18px}.month-card .month-title{display:flex;align-items:center;justify-content:space-between;gap:10px}.month-card h3{margin:0}.dashboard-note{margin:0;color:var(--mut);font-size:14px}
+#inicio:not(.hide){display:block}
+@media(max-width:760px){body{font-size:15px}header{padding:22px 15px 18px}.header-row{align-items:flex-start}.header-actions{display:none}h1{font-size:32px}nav{padding:8px 12px;overflow-x:auto;flex-wrap:nowrap}nav button{flex:none}.hero{margin:12px 12px 8px;padding:15px}.hero h2{font-size:23px}.kpis{grid-template-columns:repeat(2,1fr)}.quick{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr;padding-left:12px;padding-right:12px}.tech-grid{grid-template-columns:1fr}.tech-wide{grid-column:auto}h2{margin-left:12px;margin-right:12px}.note,.leg{padding-left:12px;padding-right:12px}.bar{padding-left:12px;padding-right:12px}.tbl{padding-left:12px;padding-right:12px}}
+
+.ov{position:fixed;inset:0;z-index:100;background:rgba(10,20,10,.72);display:flex;align-items:center;justify-content:center;padding:18px}.ov.hide{display:none}.ov .bx{background:var(--card);border-radius:20px;padding:22px;max-width:460px;width:100%;max-height:92vh;overflow:auto}.al{display:block;padding:9px 12px;border-radius:10px;margin:6px 0;color:#fff;font-weight:600;font-size:14.5px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="header-row"><div><h1>Mi huerta en Varela</h1><p>Planificador, catálogo técnico y cuaderno de campo en un solo lugar.</p></div><div class="header-actions"><button id="themeBtn" type="button">☾ Tema</button></div></div></div></header>
+<div class="wrap">
+<nav role="tablist">
+<button role="tab" aria-selected="true" data-t="inicio">⌂ Inicio</button>
+<button role="tab" aria-selected="false" data-t="col">🌿 Colgantes</button>
+<button role="tab" aria-selected="false" data-t="sue">Suelo y cantero</button>
+<button role="tab" aria-selected="false" data-t="rot">Rotación por años</button>
+<button role="tab" aria-selected="false" data-t="cic">Ciclo del año</button>
+<button role="tab" aria-selected="false" data-t="sem">Esta semana</button>
+<button role="tab" aria-selected="false" data-t="mes">Este mes</button>
+<button role="tab" aria-selected="false" data-t="cal">🧮 Calculadora</button>
+<button role="tab" aria-selected="false" data-t="fue">📚 Fuentes</button>
+<button role="tab" aria-selected="false" data-t="reg">Mi registro</button>
+</nav>
+
+<section id="inicio">
+<div class="hero"><div class="hero-top"><div><div class="status-pill"><span class="status-dot"></span><span id="seasonNow">Estación</span></div><h2>Panel de control</h2><p class="dashboard-note">Todo lo importante de tu huerta, resumido para entrar, mirar y decidir rápido.</p></div></div>
+<div class="kpis"><div class="kpi"><strong id="kCultivos">—</strong><span>cultivos en catálogo</span></div><div class="kpi"><strong id="kColgantes">—</strong><span>aromáticas y colgantes</span></div><div class="kpi"><strong id="kReg">—</strong><span>siembras en tu registro</span></div><div class="kpi"><strong id="kCosechas">—</strong><span>cosechas estimadas</span></div></div>
+<div class="quick"><button onclick="goTab('sue')">🌱 Ver cultivos<small>Suelo, cantero e invernadero</small></button><button onclick="goTab('col')">🪴 Aromáticas<small>Macetas y colgantes</small></button><button onclick="goTab('sem')">☑️ Tareas<small>Qué revisar esta semana</small></button><button onclick="goTab('reg')">📒 Mi registro<small>Siembras y cosechas</small></button></div></div>
+<div id="pwaBar" class="hide" style="padding:8px 0"><button class="chip" id="pwaBtn" style="background:var(--ok);color:#fff;border-color:var(--ok)">📲 Instalar App en el celular</button></div>
+<div class="hero" id="wxc"><div class="hero-top"><div><h3 style="margin:0" id="wxt">Clima</h3><p class="dashboard-note" id="wxs"></p></div><div style="display:flex;gap:6px"><button class="chip" id="wxz">Cambiar zona</button><button class="chip" id="wxb">Actualizar</button></div></div><p id="wxn" style="margin:10px 0 0;font-weight:600"></p><div class="tbl" style="padding:0;margin-top:8px"><table id="wxd" style="min-width:420px"></table></div><div id="wxa" style="margin-top:10px"></div></div>
+<div class="hero month-card"><div class="month-title"><h3 id="monthName">Qué mirar este mes</h3><span class="status-pill">📍 Varela</span></div><p class="dashboard-note" id="monthSummary"></p></div>
+<div class="grid" id="homeTasks"></div>
+</section>
+
+<section id="col">
+<div class="bar"><input id="q1" type="search" placeholder="Buscar planta" aria-label="Buscar colgante">
+<button class="chip" data-f="all" aria-pressed="true">Todas</button>
+<button class="chip" data-f="af" aria-pressed="false">Afuera todo el año</button>
+<button class="chip" data-f="ad" aria-pressed="false">Adentro todo el año</button></div>
+<div class="leg">Verde: ideal · Amarillo: posible con condiciones · Rojo: no conviene</div>
+<div class="grid" id="g1"></div>
+</section>
+
+<section id="sue" class="hide">
+<div class="bar"><input id="q2" type="search" placeholder="Buscar cultivo" aria-label="Buscar cultivo">
+<button class="chip" data-f="all" aria-pressed="true">Todos</button>
+<button class="chip" data-f="af" aria-pressed="false">Puede ir afuera</button>
+<button class="chip" data-f="ad" aria-pressed="false">Puede ir adentro</button></div>
+<div class="bar" style="padding-top:0" id="fam"></div>
+<div class="leg">El color de cada tarjeta es el grupo de rotación.</div>
+<div class="grid" id="g2"></div>
+</section>
+
+<section id="rot" class="hide">
+<h2>Exterior: 4 sectores, ciclo de 4 años</h2>
+<p class="note">Cada sector cambia de grupo cada año. Así no repetís la misma familia en el mismo lugar por 3 años.</p>
+<div class="tbl"><table id="t1"></table></div>
+<h2>Invernadero: 3 sectores de 50 cm, ciclo de 3 años</h2>
+<p class="note">V = verano (oct-abr), I = invierno (may-sep). Jengibre, cúrcuma, ají y habanero van en macetas, fuera de la rotación.</p>
+<div class="tbl"><table id="t2"></table></div>
+<h2>Grupos</h2>
+<div class="grid" id="gr"></div>
+</section>
+
+<section id="cic" class="hide">
+<h2>Ciclo del año, mes a mes</h2>
+<p class="note">Qué hace cada planta durante el año en Varela. El mes actual está marcado con un borde. Las fechas son orientativas y cambian según el clima de cada temporada.</p>
+<div class="lg"><i class="cS">S</i> Sembrar o plantar <i class="cC">C</i> Crece <i class="cH">H</i> Cosechar <i class="cR">R</i> Reposo, se retira o no conviene</div>
+<h2>Colgantes</h2><div class="tbl"><table class="cy" id="c1"></table></div>
+<h2>Suelo y cantero</h2><div class="tbl"><table class="cy" id="c2"></table></div>
+</section>
+
+<section id="sem" class="hide">
+<h2>Tareas de la semana</h2>
+<p class="note" id="swk"></p>
+<div class="bar"><span id="spg" style="font-weight:600"></span></div>
+<div class="grid" id="tl" style="grid-template-columns:1fr;max-width:720px"></div>
+<h2>Pasar al calendario</h2>
+<p class="note">Cuando termines de cargar tu registro, descargá el archivo y pasalo a Google Calendar. <b>CSV:</b> funciona desde esta página y trae tus cosechas estimadas, el plan de cada mes y un aviso todos los lunes a las 9:00. Se importa desde calendar.google.com en una computadora. <b>.ics:</b> sirve si abrís el archivo .html descargado. Después, las notificaciones del celular las manda Google Calendar según tus ajustes.</p>
+<div class="bar"><button class="chip" id="cs" style="background:var(--ok);color:#fff;border-color:var(--ok)">Descargar todo para Google Calendar (CSV)</button><button class="chip" id="ci" style="background:var(--g3);color:#fff;border-color:var(--g3)">📅 Descargar calendario completo (.ics)</button><span id="cm" class="note" style="padding:0"></span></div>
+</section>
+
+<section id="mes" class="hide">
+<h2>Qué hacer este mes</h2>
+<div class="bar" id="mchips"></div>
+<p class="note" id="mnote"></p>
+<div class="grid" id="mgrid"></div>
+</section>
+
+<section id="cal" class="hide">
+<h2>Calculadora: cuánto sembrar</h2>
+<p class="note">Elegí el cultivo, cuántas personas son y cuántas veces por semana lo comen. Te dice cuántas plantas sembrar y cada cuánto, para no pasarte ni quedarte corto. Una porción es un plato de acompañamiento (unos 100 a 150 g). Los rendimientos son <b>supuestos aproximados</b>: ajustá "porciones por planta" con lo que realmente coseches.</p>
+<div class="bar"><select id="kc" aria-label="Cultivo"></select><label>Personas <input type="number" id="kp" min="1" value="4" style="flex:0 1 80px"></label><label>Veces por semana <input type="number" id="kv" min="1" max="14" value="3" style="flex:0 1 80px"></label><label>Margen % <input type="number" id="km" min="0" max="100" value="25" style="flex:0 1 80px"></label></div>
+<div class="bar"><label>Porciones por planta <input type="number" id="kr" min="0.05" step="0.05" style="flex:0 1 100px"></label><label>Plantas que pensás sembrar por tanda (opcional) <input type="number" id="kt" min="0" placeholder="Opcional" style="flex:0 1 110px"></label></div>
+<div class="grid" id="kg" style="grid-template-columns:1fr;max-width:720px"></div>
+</section>
+
+<section id="fue" class="hide">
+<h2>Fuentes por planta</h2>
+<p class="note">Las distancias, ciclos y épocas de siembra se contrastaron con el Planificador ProHuerta del INTA (AMBA) y otras fuentes. Plagas, pH del suelo, rinde por planta y tamaño de maceta <b>no tienen fuente verificada</b> en la mayoría de los casos. Sirven como orientación.</p>
+<div class="bar"><button class="chip" data-f="all" aria-pressed="true">Todas</button><button class="chip" data-f="ok" aria-pressed="false">Con fuente</button><button class="chip" data-f="parcial" aria-pressed="false">Parcial</button><button class="chip" data-f="sin" aria-pressed="false">Sin fuente</button></div>
+<div class="grid" id="fgr"></div>
+</section>
+
+<section id="reg" class="hide">
+<h2>Mi registro de siembras</h2>
+<p class="note">Anotá qué plantaste, dónde y cuándo. La página calcula la cosecha estimada y te avisa si repetís el mismo grupo en un sector en menos de 3 años. Se guarda en este navegador: si lo abrís en otro equipo o desde el archivo descargado, el registro empieza de cero.</p>
+<div class="bar"><select id="rp" aria-label="Planta"></select><select id="rs" aria-label="Sector"></select><select id="racc" aria-label="Acción"><option>Siembra</option><option>Trasplante</option><option>Cosecha</option></select><input type="date" id="rd" aria-label="Fecha" style="flex:0 1 160px"><input type="number" id="rq" min="1" value="1" aria-label="Cantidad" style="flex:0 1 90px"><input type="file" id="rf" accept="image/*" aria-label="Foto" style="flex:1 1 220px"><input id="rn" placeholder="Notas (si anotás lluvia o tormenta, te aviso por hongos)" style="flex:1 1 240px"><button class="chip" id="ra" style="background:var(--ok);color:#fff;border-color:var(--ok)">Agregar</button></div>
+<p class="note" id="rw" style="color:var(--no)"></p><p class="note" id="rfc"></p><div class="bar"><button class="chip" id="bx">Guardar copia de seguridad</button><label class="chip" style="cursor:pointer">Restaurar copia<input type="file" id="bi" accept=".json,application/json" hidden></label><span id="bm" class="note" style="padding:0"></span></div>
+<div class="grid" id="rl"></div>
+</section>
+</div>
+
+<style>
+.lg{padding:0 18px 6px;font-size:14px;color:var(--mut)}
+.lg i,.cy td.m{font-style:normal;font-weight:600;text-align:center;border-radius:5px}
+.lg i{display:inline-block;width:24px;margin:0 4px 0 12px;color:#fff}
+.cS{background:var(--g5);color:#fff}.cC{background:#a9d6a3;color:#1f2a1c}.cH{background:var(--ok);color:#fff}.cR{background:var(--line);color:var(--mut)}
+.cy{min-width:720px}.cy th,.cy td{padding:5px 4px;font-size:13px}
+.cy td.m{width:6.2%;border:2px solid var(--card)}
+.cy th.now,.cy td.now{outline:3px solid var(--mid);outline-offset:-3px}
+.cy td.n{min-width:150px;font-size:14px}.cy td.n b{display:block}.cy td.n small{color:var(--mut);font-size:12px;line-height:1.3;display:block}
+</style>
+
+<div id="wel" class="ov hide"><div class="bx"><h2 style="margin:0 0 6px">Bienvenido a tu huerta</h2><p style="margin:0 0 12px">Elegí tu zona para ajustar el clima y las alertas.</p>
+<label>Zona</label><br><select id="wz"><option value="sur">Zona sur</option><option value="norte">Zona norte</option><option value="oeste">Zona oeste</option></select>
+<div id="wlw" style="margin-top:10px"><label>Localidad</label><br><select id="wl"><option>Varela</option><option>Quilmes</option><option>Berazategui</option><option>La Plata</option></select></div>
+<ul style="padding-left:20px;font-size:14.5px"><li>Los datos de cultivos y fechas son orientativos.</li><li>Todo lo que cargues queda solo en este teléfono. Hacé copias de seguridad desde Mi registro.</li><li>El clima en vivo necesita internet. Sin conexión se usan valores típicos de tu zona.</li></ul>
+<button class="chip" id="wok" style="background:var(--ok);color:#fff;border-color:var(--ok);width:100%">Empezar</button></div></div>
+<script>
+const E={y:['Ideal','y'],m:['Posible','m'],n:['No conviene','n']};
+// nombre, afuera, adentro, altura, humedad, riego, sol, plagas, ciclo
+const COL=[
+['Romero','y','m','Alta','Baja','Escaso','Directo 6 h o más','Podredumbre de raíz, oídio, cochinillas. Sustrato con arena, riego espaciado, ventilación.','Perenne'],
+['Tomillo','y','m','Alta','Baja','Escaso','Directo','Podredumbre de raíz, hongos por humedad. No encharcar.','Perenne'],
+['Orégano','y','m','Alta','Baja a media','Escaso a moderado','Directo','Oídio, pulgones. Ventilar y jabón potásico.','Perenne'],
+['Salvia','y','m','Alta','Baja a media','Escaso a moderado','Directo','Oídio, arañuela. Azufre, no mojar hojas.','Perenne'],
+['Ciboulette','y','y','Media','Media','Moderado','Directo o semisombra','Roya, trips, mildiu. Poco nitrógeno, jabón potásico.','Perenne'],
+['Cebollino chino','y','y','Media','Media','Moderado','Directo o semisombra','Roya, trips. Igual que la ciboulette.','Perenne'],
+['Cebolla de verdeo','y','y','Media','Media','Moderado, maceta de 15-20 cm','Directo','Trips, mildiu, roya. Rotar sustrato, ventilar.','Siembra fuerte feb-may'],
+['Albahaca','m','y','Media','Media a alta','Casi diario en enero, al pie','Directo, sin viento','Mildiu, Fusarium. Riego al pie, no repetir sustrato.','Anual, solo oct-abr afuera'],
+['Menta','y','y','Baja a media','Media a alta','Regular','Semisombra o directo','Roya, pulgones. Maceta propia porque es invasiva.','Perenne'],
+['Perejil','y','y','Baja','Media a alta','Regular','Semisombra en verano','Septoria, pulgones, babosas. No mojar hojas.','Bianual'],
+['Cilantro','m','m','Baja','Media','Regular','Semisombra en verano','Pulgones, manchas. Siembra escalonada; en verano se espiga.','Anual'],
+['Mejorana','y','m','Alta','Baja','Escaso','Directo','Oídio, pulgones. Ventilar, no encharcar.','Perenne'],
+['Eneldo','y','y','Media','Media','Regular','Directo o semisombra','Pulgones, oídio. Siembra directa y escalonada.','Anual'],
+['Melisa','y','y','Baja a media','Media a alta','Regular','Semisombra','Oídio, pulgones. Podar para que rebrote.','Perenne'],
+['Lavanda','y','m','Alta','Baja','Escaso','Directo pleno','Podredumbre de raíz, cochinillas. Mucho drenaje.','Perenne'],
+['Caléndula','y','y','Media','Media','Moderado','Directo','Pulgones, oídio. Sacar flores secas para que florezca más.','Anual, se resiembra sola'],
+['Capuchina','y','m','Media','Media','Moderado','Directo o semisombra','Pulgón negro, orugas. Chorro de agua, jabón potásico.','Anual, cae en cascada']];
+const GR={sol:['Solanáceas','var(--g1)'],cuc:['Cucurbitáceas + maíz','var(--g2)'],hoj:['Hojas y crucíferas','var(--g3)'],ceb:['Cebollas, umbelíferas y legumbres','var(--g4)'],mac:['Macetas, sustrato nuevo cada año','var(--g5)'],fij:['Fijo, cama propia','var(--g6)']};
+// nombre, grupo, afuera, adentro, siembra, cosecha, plagas
+const SUE=[
+['Tomate cherry','sol','m','y','Trasplante sep-nov','2,5-3 meses','Tizón, moho de la hoja, polilla, mosca blanca. Ventilar, regar al pie, Bt, trampas amarillas.'],
+['Tomate grande','sol','y','n','Trasplante sep-nov','3 meses','Tizón tardío, polilla, podredumbre apical. Cobre preventivo, riego parejo.'],
+['Morrón','sol','y','m','Trasplante oct-nov','3-4 meses','Oídio, arañuela, pulgón. Azufre, jabón potásico.'],
+['Ají','sol','y','y','Almácigo ago-sep, trasplante oct-nov','3-5 meses','Pulgón, arañuela, podredumbre del cuello. Neem, no encharcar.'],
+['Habanero','sol','m','y','Almácigo ago-sep, trasplante nov','4-5 meses','Como el ají, y mosca blanca adentro. Trampas amarillas.'],
+['Anco','cuc','y','n','Oct-dic','4-5 meses','Oídio, vaquita, virus por pulgones. Azufre, no mojar follaje.'],
+['Zapallo cabutia','cuc','y','n','Oct-dic','4-5 meses','Igual que el anco.'],
+['Pepino','cuc','y','y','Oct-dic (adentro desde sep), con tutor','2-3 meses','Oídio, mildiu, arañuela adentro. Ventilar y azufre.'],
+['Maíz','cuc','y','n','Oct-dic, en bloque','3-4 meses','Cogollera, gusano de la espiga, pulgón. Bt en el cogollo.'],
+['Acelga','hoj','y','m','Sep-nov y feb-abr','2-3 meses','Cercospora, minador, babosas. Sacar hojas con galerías.'],
+['Espinaca','hoj','y','y','Mar-ago','1,5-2 meses','Mildiu, minador, pulgón. Ventilar, no sembrar denso.'],
+['Remolacha','hoj','y','m','Ago-nov y feb-abr','2-3 meses','Cercospora, minador. Rotar, suelo suelto.'],
+['Repollo (blanco y colorado)','hoj','y','m','Almácigo feb-may','3-5 meses','Oruga de la col, pulgón, babosas, hernia. Bt, malla.'],
+['Rabanito','hoj','y','y','Casi todo el año','25-40 días','Pulguilla, babosas. Malla antiinsectos, riego parejo.'],
+['Mostaza (hoja)','hoj','y','y','Mar-sep','1-2 meses','Pulguilla, orugas, pulgón. Malla, Bt.'],
+['Lechuga','hoj','y','y','Mar-ago y sep-oct','2-3 meses','Botrytis, mildiu, pulgón, babosas. No mojar hojas.'],
+['Puerro','ceb','y','y','Almácigo feb-may (también ago-oct)','4-6 meses','Roya, trips, mildiu. Poco nitrógeno.'],
+['Cebollino chino','ceb','y','y','Sep-nov o por división','Perenne','Roya, trips. Poco nitrógeno.'],
+['Anís','ceb','y','n','Directo sep-nov','4-5 meses','Oídio, pulgones. Azufre, buen espaciado.'],
+['Jengibre','mac','m','y','Rizoma oct-nov, maceta grande','8-10 meses','Podredumbre del rizoma. No encharcar.'],
+['Cúrcuma','mac','m','y','Rizoma oct-nov, maceta grande','8-10 meses','Igual que el jengibre.'],
+['Espárrago','fij','y','n','Coronas jul-sep','2-3 años','Roya, Fusarium de corona. Retirar follaje seco, drenaje.'],
+['Arveja','ceb','y','m','Directo mar-jul, con tutor','3-4 meses','Oídio, pulgón. Azufre.'],
+['Haba','ceb','y','n','Directo abr-jul','4-5 meses','Pulgón negro, roya. Despuntar.'],
+['Poroto chaucha','ceb','y','m','Directo oct-dic','2-3 meses','Arañuela, pulgón, vaquita. Riego al pie.'],
+['Poroto seco','ceb','y','n','Directo oct-dic','4-5 meses','Como la chaucha. Cosechar con la vaina seca.'],
+['Garbanzo','ceb','y','n','Directo jun-ago','5-6 meses','Hongos con exceso de humedad. Buen drenaje.'],
+['Edamame','ceb','y','m','Directo oct-dic','3-4 meses','Pulgón, chinches. Neem.'],
+['Zanahoria','ceb','y','m','Directo sep-nov y feb-abr','3-4 meses','Mosca de la zanahoria, alternaria. Rotar.'],
+['Papa','sol','y','n','Tubérculo ago-sep','4-5 meses','Tizón, vaquita, polilla. Aporcar, cobre.'],
+['Batata','ceb','y','n','Guías o esquejes oct-dic','4-6 meses','Pocas plagas. Evitar suelo pesado.'],
+['Cebolla de bulbo (blanca y morada)','ceb','y','n','Almácigo mar-may','6-7 meses','Mildiu, trips, podredumbre blanca. Riego medido.'],
+['Ajo','ceb','y','n','Dientes abr-jun','6-7 meses','Roya, podredumbre blanca. Dientes sanos, rotar.'],
+['Nabo','hoj','y','m','Directo mar-ago','2-3 meses','Pulguilla, pulgón. Malla.'],
+['Brócoli','hoj','y','n','Almácigo feb-may','3-4 meses','Oruga de la col, pulgón. Bt, malla.'],
+['Coliflor','hoj','y','n','Almácigo feb-abr','3-5 meses','Como el brócoli. Atar hojas para blanquear.'],
+['Rúcula','hoj','y','y','Directo mar-oct','1-1,5 meses','Pulguilla, babosas. Malla.'],
+['Kale','hoj','y','y','Almácigo feb-may y ago','2-3 meses','Pulgón, orugas. Bt, malla.'],
+['Radicheta','hoj','y','y','Directo feb-may','2-3 meses','Babosas, pulgón. Ventilar.'],
+['Pak choi','hoj','y','y','Directo mar-may y ago-sep','1,5-2 meses','Pulguilla, babosas. Malla.'],
+['Zapallito de tronco','cuc','y','n','Directo oct-ene','1,5-2 meses','Oídio, vaquita. Azufre, cosechar chico.'],
+['Berenjena','sol','y','m','Almácigo ago-sep, trasplante oct-nov','3-4 meses','Vaquita, pulgón, arañuela. Neem.'],
+['Frutilla','fij','y','y','Plantines abr-jun','Cosecha oct-dic','Botrytis, babosas. Mulching de paja.'],
+['Sandía','cuc','y','n','Directo oct-nov','3-4 meses','Oídio, pulgón. Mucho espacio y calor.'],
+['Melón','cuc','y','n','Directo oct-nov','3-4 meses','Como la sandía.'],
+['Apio','ceb','y','m','Almácigo ago-sep y feb-mar','4-5 meses','Septoria, pulgón. Riego constante.'],
+['Hinojo','ceb','y','n','Directo ago-sep y feb-mar','3-4 meses','Pulgón. Mejor apartado de otros cultivos.'],
+['Alcaucil','fij','y','n','Hijuelos feb-abr','Cosecha sep-nov','Pulgón negro, babosas. Cortar tras cosechar.'],
+['Laurel','fij','y','n','Plantín en primavera','Todo el año','Cochinilla. Podar.']];
+
+const MAC={'Romero':'5-10 L, 25 cm de profundidad','Tomillo':'3-5 L, 15-20 cm','Orégano':'3-5 L, 20 cm','Salvia':'5-10 L, 25 cm','Ciboulette':'2-3 L, 15-20 cm','Cebollino chino':'3 L, 15-20 cm','Cebolla de verdeo':'3-5 L, 15-20 cm','Albahaca':'3-5 L por planta, 20 cm','Menta':'5-8 L, 20 cm, siempre sola','Perejil':'5 L, 25 cm (raíz larga)','Cilantro':'5 L, 25 cm (raíz larga)','Mejorana':'3-5 L, 20 cm','Eneldo':'5 L, 25 cm (raíz larga)','Melisa':'5-8 L, 20 cm','Lavanda':'8-10 L, 30 cm','Caléndula':'3-5 L, 20 cm','Capuchina':'5 L, 20 cm, colgante'};
+const DIST={'Tomate cherry':'40-50 cm entre plantas, 80-100 cm entre filas','Tomate grande':'50-60 cm entre plantas, 100 cm entre filas','Morrón':'40-50 cm entre plantas, 70-80 cm entre filas','Ají':'40 cm entre plantas, 60-70 cm entre filas','Habanero':'50 cm en suelo; en maceta, 1 planta por 10-20 L','Anco':'1-1,5 m entre plantas, 2-3 m entre filas','Zapallo cabutia':'1-1,5 m entre plantas, 2-3 m entre filas','Pepino':'30-40 cm con tutor, 80-100 cm entre filas','Maíz':'25-30 cm entre plantas, 70-80 cm entre filas, en bloque','Acelga':'25-30 cm entre plantas, 40 cm entre filas','Espinaca':'10 cm entre plantas, 25-30 cm entre filas','Remolacha':'8-10 cm entre plantas, 30 cm entre filas','Repollo (blanco y colorado)':'40-50 cm entre plantas, 60 cm entre filas','Rabanito':'3-5 cm entre plantas, 15-20 cm entre filas','Mostaza (hoja)':'10 cm entre plantas, 25 cm entre filas','Lechuga':'25-30 cm entre plantas, 30 cm entre filas','Puerro':'10-15 cm entre plantas, 30 cm entre filas','Cebollino chino':'15-20 cm entre matas, 25 cm entre filas','Anís':'20-25 cm entre plantas, 40 cm entre filas','Jengibre':'Maceta de 30-40 L; en suelo, 25-30 cm entre rizomas','Cúrcuma':'Maceta de 30-40 L; en suelo, 25-30 cm entre rizomas','Espárrago':'30-40 cm entre coronas, 1,2-1,5 m entre filas','Arveja':'5 cm entre plantas, 50 cm entre filas','Haba':'15-20 cm entre plantas, 60 cm entre filas','Poroto chaucha':'10 cm entre plantas, 50-60 cm entre filas','Poroto seco':'10 cm entre plantas, 50-60 cm entre filas','Garbanzo':'10 cm entre plantas, 40 cm entre filas','Edamame':'10 cm entre plantas, 40-50 cm entre filas','Zanahoria':'5 cm entre plantas (ralear), 25 cm entre filas','Papa':'30 cm entre tubérculos, 70-80 cm entre filas','Batata':'30-40 cm entre plantas, 90-100 cm entre filas','Cebolla de bulbo (blanca y morada)':'8-10 cm entre plantas, 25-30 cm entre filas','Ajo':'10 cm entre dientes, 25-30 cm entre filas','Nabo':'10 cm entre plantas, 25 cm entre filas','Brócoli':'40-50 cm entre plantas, 60-70 cm entre filas','Coliflor':'50 cm entre plantas, 60-70 cm entre filas','Rúcula':'5 cm entre plantas, 20 cm entre filas','Kale':'40 cm entre plantas, 50-60 cm entre filas','Radicheta':'20-25 cm entre plantas, 30 cm entre filas','Pak choi':'15-20 cm entre plantas, 30 cm entre filas','Zapallito de tronco':'60-80 cm entre plantas, 1-1,2 m entre filas','Berenjena':'50 cm entre plantas, 70-80 cm entre filas','Frutilla':'25-30 cm entre plantas, 40 cm entre filas','Sandía':'1-1,5 m entre plantas, 2 m entre filas','Melón':'80-100 cm entre plantas, 1,5-2 m entre filas','Apio':'25-30 cm entre plantas, 40 cm entre filas','Hinojo':'25-30 cm entre plantas, 40-50 cm entre filas','Alcaucil':'1 m entre plantas, 1,2-1,5 m entre filas','Laurel':'2-3 m de árboles o muros; en maceta, 40-60 L'};
+const SG={sol:'Profundo, rico en compost y bien drenado. pH 6-6,8.',cuc:'Suelto y muy rico en compost o estiércol maduro. pH 6-7. Húmedo sin encharcar.',hoj:'Rico en nitrógeno (compost), húmedo y suelto. pH 6-7,5.',ceb:'Suelto, profundo y sin piedras; sin estiércol fresco. pH 6-7. Buen drenaje.',mac:'Aireado y rico en compost, húmedo sin encharcar. pH 5,5-6,5.',fij:'Profundo, muy bien drenado, con compost al plantar. pH 6,5-7,5.'};
+const DRY='Pobre y arenoso: tierra + 30% de arena o perlita. pH 6-7,5. Nunca encharcado.',RIC='Tierra con compost, húmeda pero drenada. pH 6-7.',LEG='Suelto y drenado, pH 6-7. Poco compost: fijan su propio nitrógeno.',BRA='Firme y rico, pH 6,5-7 (encalar si es ácido). Mucho compost.',RAD='Suelto, fino y fresco, pH 6-7. Sin estiércol fresco ni piedras.',SUE_='Suelto con compost, buen drenaje. pH 6-7.';
+const SX={'Romero':DRY,'Tomillo':DRY,'Orégano':DRY,'Salvia':DRY,'Mejorana':DRY,'Lavanda':DRY,'Ciboulette':SUE_,'Cebollino chino':SUE_,'Cebolla de verdeo':SUE_,'Albahaca':RIC,'Menta':RIC,'Perejil':RIC,'Cilantro':RIC,'Eneldo':RIC,'Melisa':RIC,'Caléndula':'Suelo normal o pobre; con exceso de compost da hojas y pocas flores. pH 6-7.','Capuchina':'Suelo pobre o normal; con exceso de nitrógeno da solo hojas. pH 6-7.','Maíz':'Profundo, rico en nitrógeno, pH 6-7. Riego parejo.','Zanahoria':'Muy suelto, franco-arenoso, 30 cm de profundidad, sin piedras. pH 6-7.','Papa':'Suelto, algo ácido (pH 5-6,5), sin cal. Aporcar.','Batata':'Franco-arenoso, suelto y pobre en nitrógeno. pH 5,5-6,5.','Arveja':LEG,'Haba':LEG,'Poroto chaucha':LEG,'Poroto seco':LEG,'Garbanzo':LEG,'Edamame':LEG,'Brócoli':BRA,'Coliflor':BRA,'Rabanito':RAD,'Nabo':RAD,'Remolacha':'Suelto, sin terrones ni estiércol fresco. pH 6-7,5.','Frutilla':'Rico en materia orgánica, algo ácido (pH 5,5-6,5), buen drenaje.','Sandía':'Franco-arenoso, cálido y drenado. pH 6-7.','Melón':'Franco-arenoso, cálido y drenado. pH 6-7.','Apio':'Muy rico en materia orgánica, siempre húmedo. pH 6-7.','Espárrago':'Franco-arenoso, muy drenado, zanja con compost. pH 6,5-7,5.','Laurel':'Bien drenado, tolera suelo pobre. pH 6-7,5.'};
+const sl=(n,g)=>SX[n]||SG[g]||'';
+const st=(l,v)=>`<span class="s-${v}"><small>${l}</small>${E[v][0]}</span>`;
+const TEC=[{"nombre":"Tomate Cherry","tipo":"suelo","familia":"Solanáceas","espacio":"ambos","maceta":"No aplica (Cajón o Tierra)","suelo":"Franco-Arenoso, rico en compost, excelente drenaje. pH 6.0-6.8","distancia":"40-50 cm","temp":"18°C - 30°C","sol":"+6 horas (Sol Pleno)","germinacion":"6-8 días (Profundidad: 0.5 cm)","poda":"Tutorado estricto. Eliminar chupones axilares todas las semanas.","asociacion":"👍 Albahaca, Puerro, Lechuga | 👎 Papa, Maíz","plagas":"Tizón hongo, mosca blanca, polilla del tomate.","prev":"Ventilar invernadero, trampas amarillas pegajosas, aplicar Bt para orugas.","maduracion":75},{"nombre":"Tomate Grande / Gigante","tipo":"suelo","familia":"Solanáceas","espacio":"exterior","maceta":"No aplica","suelo":"Franco, profundo, muy abonado. Evitar suelos compactados. pH 6.2-6.8","distancia":"50-60 cm","temp":"20°C - 28°C","sol":"+6 horas (Sol Pleno)","germinacion":"6-8 días (Profundidad: 0.5 cm)","poda":"Tutorado reforzado a 1 o 2 ejes. Deshojado basal bajo los racimos.","asociacion":"👍 Albahaca, Copetes, Puerro | 👎 Papa","plagas":"Tizón tardío por lluvias, podredumbre apical.","prev":"Aplicar Cobre preventivo post-tormentas en Varela. Riego regular sin encharcar.","maduracion":90},{"nombre":"Morrón Común / Orange","tipo":"suelo","familia":"Solanáceas","espacio":"exterior","maceta":"Macetón de 20L mínimo si se saca","suelo":"Suelto, aireado, rico en humus de lombriz. pH 6.0-6.5","distancia":"40 cm","temp":"20°C - 32°C","sol":"+6 horas (Sol Pleno)","germinacion":"10-14 días (Necesita calor, 0.5 cm)","poda":"Eliminar la primera flor central para fortalecer eje. Entutorar en cruz.","asociacion":"👍 Zanahoria, Albahaca | 👎 Tomate, Papa","plagas":"Oídio, arañuela roja en días secos, pulgón.","prev":"Aplicar Azufre elemental y Jabón Potásico. Mantener humedad ambiental.","maduracion":100},{"nombre":"Puerro","tipo":"suelo","familia":"Amarilidáceas","espacio":"ambos","maceta":"Profundidad mínima 25 cm","suelo":"Franco, suelto, profundo y sin piedras. pH 6.0-7.0","distancia":"15 cm","temp":"12°C - 22°C","sol":"4-5 horas (Semisombra)","germinacion":"12-15 días (Profundidad: 1 cm)","poda":"No se poda. Realizar aporcado (arrimar tierra) para blanquear el tallo.","asociacion":"👍 Zanahoria, Tomate, Lechuga | 👎 Arvejas, Habas","plagas":"Trips, roya del ajo.","prev":"Evitar exceso de nitrógeno (compost fresco). Aplicar infusión de ajo.","maduracion":130},{"nombre":"Lechuga Mantecosa / Criolla","tipo":"suelo","familia":"Asteráceas","espacio":"ambos","maceta":"3 a 5 Litros individual","suelo":"Ligero, rico en materia orgánica, alta retención de agua. pH 6.0-7.0","distancia":"20-25 cm","temp":"15°C - 20°C","sol":"3-4 horas (Agradece sombra en verano)","germinacion":"4-6 días (Profundidad: 0.2 cm)","poda":"No se poda. Se pueden cosechar hojas sueltas exteriores.","asociacion":"👍 Tomate, Morrón, Rabanito | 👎 Apio","plagas":"Babosas, caracoles, pulgones, hongo Botrytis.","prev":"Poner trampas de cerveza para babosas. Riego estricto al pie sin mojar hojas.","maduracion":60},{"nombre":"Rabanito","tipo":"suelo","familia":"Crucíferas","espacio":"ambos","maceta":"2 Litros (Mínimo 15cm profundidad)","suelo":"Suelto, arenoso, libre de terrones. pH 5.5-6.8","distancia":"5-8 cm","temp":"10°C - 22°C","sol":"4 horas","germinacion":"3-4 días (Hiper rápido, 1 cm)","poda":"No se poda. Requiere raleo si nacen muy juntos.","asociacion":"👍 Lechuga, Espinaca, Zanahoria | 👎 Repollo","plagas":"Pulguilla coladera de hoja, babosas.","prev":"Riego parejo diario (si pasa sed se pone picante). Usar malla antiinsectos.","maduracion":30},{"nombre":"Romero","tipo":"colgante","familia":"Lamiáceas","espacio":"ambos","maceta":"15-20L profunda","suelo":"Arenoso, calcáreo, drenaje perfecto. pH 6.5-7.5","distancia":"Macetas individuales","temp":"15°C - 25°C","sol":"Sol Pleno","germinacion":"Por esqueje preferentemente","poda":"Poda de formación a fin de verano. Retirar ramas secas.","asociacion":"👍 Zanahoria, Repollo | 👎 Pepino","plagas":"Podredumbre de raíces, cochinilla.","prev":"⚠️ Alerta Verano Varela: Sacar al exterior si adentro pasa los 45°C. Casi no regar.","maduracion":365},{"nombre":"Tomillo","tipo":"colgante","familia":"Lamiáceas","espacio":"ambos","maceta":"5-10L estirada","suelo":"Pobre, arenoso, muy seco. pH 6.0-8.0","distancia":"Macetas individuales","temp":"15°C - 26°C","sol":"Sol Pleno","germinacion":"Lenta (14-20 días, 0.2 cm)","poda":"Recorte drástico después de la floración para rejuvenecer.","asociacion":"👍 Repollo, Tomate | 👎 Ninguno","plagas":"Hongos de cuello por exceso de agua.","prev":"Sustrato con 30% de arena de río. Regar solo si la tierra está totalmente seca.","maduracion":180},{"nombre":"Orégano","tipo":"colgante","familia":"Lamiáceas","espacio":"ambos","maceta":"5-7L colgante","suelo":"Franco-arenoso, suelto. pH 6.0-7.5","distancia":"Individual","temp":"15°C - 26°C","sol":"Sol Pleno","germinacion":"10-12 días (0.2 cm)","poda":"Poda regular de tallos florales.","asociacion":"👍 Tomate, Repollo","plagas":"Oídio, pulgones.","prev":"Ventilación constante y pulverización con jabón potásico.","maduracion":90},{"nombre":"Salvia","tipo":"colgante","familia":"Lamiáceas","espacio":"ambos","maceta":"10L aireada","suelo":"Suelto, calcáreo, bien drenado. pH 6.5-7.5","distancia":"Individual","temp":"15°C - 25°C","sol":"Sol Pleno","germinacion":"15-20 días","poda":"Podar ramas leñosas viejas en primavera.","asociacion":"👍 Repollo, Zanahoria | 👎 Pepino","plagas":"Oídio, arañuela roja.","prev":"Espolvorear azufre orgánico, regar directo al sustrato sin mojar hojas.","maduracion":120},{"nombre":"Ciboulette / Cebollino","tipo":"colgante","familia":"Amarilidáceas","espacio":"ambos","maceta":"3-5L mediana","suelo":"Franco, rico en humus, retentivo pero aireado. pH 6.2-7.0","distancia":"10 cm (en maceta)","temp":"15°C - 22°C","sol":"Semisombra o sol filtrado","germinacion":"10-14 días (Profundidad: 0.5 cm)","poda":"Corte regular con tijera a 2 cm del suelo para estimular rebrote.","asociacion":"👍 Tomate, Zanahoria | 👎 Arvejas, Porotos","plagas":"Trips, hongo Roya (puntos naranjas).","prev":"Pulverizar infusión de cola de caballo. No sobrecargar de compost puro.","maduracion":90},{"nombre":"Cebollino Chino","tipo":"colgante","familia":"Amarilidáceas","espacio":"ambos","maceta":"3-5L","suelo":"Franco, fértil y suelto. pH 6.2-7.2","distancia":"10 cm","temp":"15°C - 24°C","sol":"Sol o semisombra","germinacion":"10-14 días","poda":"Corte de hojas desde la base.","asociacion":"👍 Tomate, Zanahoria","plagas":"Roya, trips.","prev":"Manejo igual a la ciboulette estándar.","maduracion":95},{"nombre":"Cebolla de Verdeo / Cebollita","tipo":"colgante","familia":"Amarilidáceas","espacio":"ambos","maceta":"5-7L tubular","suelo":"Fértil, liviano, rico en materia orgánica. pH 6.0-6.8","distancia":"12 cm","temp":"15°C - 24°C","sol":"Sol Pleno","germinacion":"10-12 días","poda":"Cosecha periférica de hojas externas dejando el centro vivo.","asociacion":"👍 Zanahoria, Lechuga","plagas":"Trips, mildiu.","prev":"Garantizar buena circulación de aire dentro del invernadero.","maduracion":100},{"nombre":"Albahaca","tipo":"colgante","familia":"Lamiáceas","espacio":"ambos","maceta":"5-7L boca ancha","suelo":"Muy rico en nutrientes, húmedo y suelto. pH 6.0-6.5","distancia":"20 cm","temp":"20°C - 35°C","sol":"Sol filtrado (evitar viento pampeano)","germinacion":"5-7 días (0.3 cm)","poda":"Despuntar los brotes florales superiores para que no se seque la planta.","asociacion":"👍 Tomate, Morrón | 👎 Ruda","plagas":"Hongo Fusarium, caracoles, minador.","prev":"Riego diario en enero directo al suelo. Muere en invierno de forma de helada.","maduracion":45},{"nombre":"Menta Peperina","tipo":"colgante","familia":"Lamiáceas","espacio":"ambos","maceta":"10-15L aislada","suelo":"Húmedo, suelto, alto contenido orgánico. pH 6.0-7.0","distancia":"Macetas individuales","temp":"15°C - 24°C","sol":"Semisombra","germinacion":"Por gajo o estolón","poda":"Poda drástica al ras a salida de invierno para renovar.","asociacion":"👍 Tomate | 👎 Manzanilla (compiten)","plagas":"Pulgón, roya de la menta.","prev":"Dejar sola en su maceta colgante adentro del invernadero para el mate.","maduracion":60},{"nombre":"Perejil","tipo":"colgante","familia":"Apiáceas","espacio":"ambos","maceta":"5L alargada","suelo":"Fértil, suelto, retentivo de humedad. pH 6.0-7.0","distancia":"15 cm","temp":"12°C - 20°C","sol":"Semisombra en verano","germinacion":"21-28 días (¡Muy lento! Remojar)","poda":"Corte de tallos exteriores.","asociacion":"👍 Tomate, Espárrago","plagas":"Septoria, pulgones.","prev":"Riego parejo directo al sustrato.","maduracion":70},{"nombre":"Cilantro","tipo":"colgante","familia":"Apiáceas","espacio":"ambos","maceta":"5L","suelo":"Suelto, permeable, moderadamente fértil. pH 6.2-6.8","distancia":"15 cm","temp":"10°C - 20°C","sol":"Evitar calor extremo","germinacion":"10-12 días","poda":"Cosecha continua. Evitar floración.","asociacion":"👍 Eneldo | 👎 Hinojo","plagas":"Pulgones, manchas foliares.","prev":"Siembras escalonadas porque florece rápido con calor.","maduracion":50},{"nombre":"Papa","tipo":"suelo","familia":"Solanáceas","espacio":"exterior","maceta":"No aplica (Suelo profundo)","suelo":"Suelto, arenoso, muy profundo, sin piedras. pH 5.0-6.0","distancia":"30-40 cm","temp":"15°C - 22°C","sol":"Sol Pleno","germinacion":"Se planta el tubérculo brotado (10 cm profundidad)","poda":"Aporcado obligatorio continuo a medida que el tallo sube.","asociacion":"👍 Maíz, Habas | 👎 Tomate, Morrón, Zapallo","plagas":"Escarabajo, Tizón de la papa, pulgón.","prev":"Comprar papa semilla certificada. Aplicar cobre preventivo.","maduracion":120},{"nombre":"Anco / Calabaza","tipo":"suelo","familia":"Cucurbitáceas","espacio":"exterior","maceta":"Prohibido en maceta","suelo":"Muy pesado en materia orgánica, retentivo. pH 6.0-7.0","distancia":"100-150 cm","temp":"22°C - 32°C","sol":"Sol Pleno absoluto","germinacion":"5-7 días (Directo en tierra, 2 cm)","poda":"Guiado manual de ramas. Despunte de guías principales a los 2 metros.","asociacion":"👍 Maíz, Porotos (Milpa) | 👎 Papa","plagas":"Oídio (ceniza), vaquita del zapallo.","prev":"Espolvorear Azufre en polvo si las hojas se blanquean. Dejar correr afuera.","maduracion":140},{"nombre":"Maíz","tipo":"suelo","familia":"Gramíneas","espacio":"exterior","maceta":"No aplica","suelo":"Franco, muy rico en Nitrógeno, profundo. pH 6.0-7.0","distancia":"25-30 cm","temp":"18°C - 30°C","sol":"Sol Pleno","germinacion":"5-8 días (Siembra directa, 3 cm)","poda":"No se poda. Eliminar hijos basales débiles si aparecen.","asociacion":"👍 Zapallo, Porotos | 👎 Tomate","plagas":"Oruga cogollera, gusano de la espiga.","prev":"⚠️ Plantar en bloques cuadrados mínimos de 4x4 para polinización por viento. Bt en cogollo.","maduracion":100},{"nombre":"Acelga","tipo":"suelo","familia":"Amarantáceas","espacio":"exterior","maceta":"15L si se deseara","suelo":"Arcilloso-franco, tolera suelos pesados si drenan. pH 6.0-7.5","distancia":"30 cm","temp":"10°C - 25°C","sol":"Cualquiera","germinacion":"7-10 días (Remojar semilla, 1.5 cm)","poda":"Cosecha continua sacando las pencas exteriores más grandes.","asociacion":"👍 Cebolla, Lechuga | 👎 Remolacha","plagas":"Hongo Cercospora (manchas con borde tinto), babosas.","prev":"Retirar hojas enfermas de inmediato. Un tanque rústico para Varela.","maduracion":50},{"nombre":"Jengibre","tipo":"suelo","familia":"Zingiberáceas","espacio":"ambos","maceta":"Macetón ancho y plano >25L","suelo":"Sustrato ultra liviano: 40% resaca, turba y perlita. pH 5.5-6.5","distancia":"25 cm","temp":"22°C - 32°C","sol":"Sombra protegida (Invernadero abajo)","germinacion":"Plantar rizoma con brote (3 cm profundidad)","poda":"No se poda. Esperar a que el follaje se seque en invierno.","asociacion":"👍 Plantas altas que den sombra | 👎 Ninguno","plagas":"Podredumbre de rizoma por encharcamiento.","prev":"No inundar nunca. El calor del invernadero abajo es su ambiente ideal.","maduracion":270},{"nombre":"Espárrago","tipo":"suelo","familia":"Asparagáceas","espacio":"exterior","maceta":"No (Cultivo permanente)","suelo":"Arenoso, profundo, muy suelto, cero encharcamiento. pH 6.5-7.5","distancia":"40 cm","temp":"15°C - 25°C","sol":"Sol Pleno","germinacion":"Se plantan garras/coronas en invierno (15 cm profundidad)","poda":"Cortar el follaje seco al ras en invierno. Dejar crecer en verano.","asociacion":"👍 Tomate, Perejil | 👎 Cebolla, Ajo","plagas":"Fusarium de corona, escarabajo del espárrago.","prev":"🔐 Cultivo fijo por 10 años. Destinar un rincón exclusivo del suelo exterior.","maduracion":730}];
+const TEC_ALIAS={"Tomate grande":"Tomate Grande / Gigante","Morrón":"Morrón Común / Orange","Ciboulette":"Ciboulette / Cebollino","Cebolla de verdeo":"Cebolla de Verdeo / Cebollita","Menta":"Menta Peperina","Anco":"Anco / Calabaza"};
+function techName(n){return TEC_ALIAS[n]||n}
+function tech(n){
+ const x=TEC.find(v=>v.nombre.toLowerCase()===techName(n).toLowerCase());
+ if(!x)return '';
+ return `<details><summary>Ficha técnica avanzada</summary><div class="tech-grid">
+ <div class="tech-item"><b>Temperatura</b>${x.temp}</div>
+ <div class="tech-item"><b>Germinación / implantación</b>${x.germinacion}</div>
+ <div class="tech-item"><b>Distancia</b>${x.distancia}</div>
+ <div class="tech-item"><b>Sol</b>${x.sol}</div>
+ <div class="tech-item tech-wide"><b>Poda / manejo</b>${x.poda}</div>
+ <div class="tech-item tech-wide"><b>Asociaciones</b>${x.asociacion}</div>
+ <div class="tech-item tech-wide"><b>Prevención</b>${x.prev}</div>
+ </div></details>`;
+}
+function seasonLabel(m){if(m>=2&&m<=4)return '🍂 Otoño';if(m>=5&&m<=7)return '❄️ Invierno';if(m>=8&&m<=10)return '🌸 Primavera';return '☀️ Verano';}
+function f1(){const q=q1.value.toLowerCase(),f=cur(col);
+g1.innerHTML=COL.filter(p=>p[0].toLowerCase().includes(q)&&(f=='all'||(f=='af'&&p[1]=='y')||(f=='ad'&&p[2]=='y'))).map(p=>`
+<article class="card" style="--c:${p[3]=='Alta'?'var(--g1)':p[3]=='Media'?'var(--g2)':'var(--g5)'}">
+<h3>${p[0]}</h3><span class="tag">Altura ${p[3].toLowerCase()}</span> <small style="color:var(--mut)">${p[8]}</small>
+<div class="pl">${st('Afuera todo el año',p[1])}${st('Adentro todo el año',p[2])}</div>
+<dl><dt>Maceta</dt><dd>${MAC[p[0]]}</dd><dt>Suelo</dt><dd>${sl(p[0])}</dd><dt>Humedad</dt><dd>${p[4]}</dd><dt>Riego</dt><dd>${p[5]}</dd><dt>Sol afuera</dt><dd>${p[6]}</dd></dl>
+<div class="pest"><b>Plagas:</b> ${p[7]}</div>${detail(p[0])}${tech(p[0])}</article>`).join('')||'<p>No hay plantas con ese filtro.</p>'}
+let fg='all';
+function f2(){const q=q2.value.toLowerCase(),f=cur(sue);
+g2.innerHTML=SUE.filter(p=>p[0].toLowerCase().includes(q)&&(fg=='all'||p[1]==fg)&&(f=='all'||(f=='af'&&p[2]!='n')||(f=='ad'&&p[3]!='n'))).map(p=>`
+<article class="card" style="--c:${GR[p[1]][1]}">
+<h3>${p[0]}</h3><span class="tag">${GR[p[1]][0]}</span>
+<div class="pl">${st('Afuera',p[2])}${st('Adentro',p[3])}</div>
+<dl><dt>Distancia</dt><dd>${DIST[p[0]]}</dd><dt>Suelo</dt><dd>${sl(p[0],p[1])}</dd><dt>Siembra</dt><dd>${p[4]}</dd><dt>Cosecha</dt><dd>${p[5]}</dd></dl>
+<div class="pest"><b>Plagas:</b> ${p[6]}</div>${detail(p[0])}${tech(p[0])}</article>`).join('')||'<p>No hay cultivos con ese filtro.</p>'}
+function cur(s){return s.querySelector('.chip[data-f][aria-pressed=true]').dataset.f}
+fam.innerHTML='<button class="chip" data-g="all" aria-pressed="true">Todos los grupos</button>'+Object.entries(GR).map(([k,v])=>`<button class="chip" data-g="${k}" aria-pressed="false" style="border-color:${v[1]}">${v[0]}</button>`).join('');
+document.querySelectorAll('.chip[data-f]').forEach(b=>b.onclick=()=>{b.parentNode.querySelectorAll('.chip[data-f]').forEach(x=>x.setAttribute('aria-pressed',x==b));f1();f2()});
+fam.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{fg=b.dataset.g;fam.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x==b));f2()});
+q1.oninput=f1;q2.oninput=f2;
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x==b));['inicio','col','sue','rot','cic','sem','mes','cal','fue','reg'].forEach(i=>document.getElementById(i).classList.toggle('hide',i!=b.dataset.t))});
+
+const cell=(k)=>`<td class="g" style="background:${GR[k][1]}">${GR[k][0]}</td>`;
+const o=['sol','cuc','hoj','ceb'];
+t1.innerHTML='<tr><th>Sector</th><th>Año 1</th><th>Año 2</th><th>Año 3</th><th>Año 4</th></tr>'+['A','B','C','D'].map((s,i)=>`<tr><th>${s}</th>${[0,1,2,3].map(y=>cell(o[(i+y)%4])).join('')}</tr>`).join('');
+// A: sol,cuc,hoj,ceb ; B: cuc,hoj,ceb,sol ; C: hoj,ceb,sol,cuc ; D: ceb,sol,cuc,hoj
+const I=[['Tomate cherry + albahaca / Espinaca o lechuga','Pepino con tutor / Puerro o cebollino','Hojas con sombra / Rabanito o espinaca'],
+['Pepino con tutor / Puerro o cebollino','Hojas con sombra / Rabanito o espinaca','Tomate cherry + albahaca / Espinaca o lechuga'],
+['Hojas con sombra / Rabanito o espinaca','Tomate cherry + albahaca / Espinaca o lechuga','Pepino con tutor / Puerro o cebollino']];
+const ic=['var(--g1)','var(--g2)','var(--g3)'];
+t2.innerHTML='<tr><th>Sector</th><th>Año 1 (verano / invierno)</th><th>Año 2</th><th>Año 3</th></tr>'+I.map((r,i)=>`<tr><th>${i+1}</th>${r.map((c,j)=>`<td class="g" style="background:${ic[(i+j)%3==0?0:(i+j)%3==1?1:2]}">${c}</td>`).join('')}</tr>`).join('');
+const gi={sol:'Tomate grande, morrón, ají, habanero, papa, berenjena',cuc:'Anco, cabutia, zapallito, pepino, sandía, melón, maíz (en bloque)',hoj:'Acelga, espinaca, remolacha, repollo, brócoli, coliflor, kale, rúcula, radicheta, pak choi, nabo, rabanito, mostaza, lechuga',ceb:'Puerro, cebollino chino, anís, perejil, cilantro, cebolla, ajo, zanahoria, apio, hinojo, batata y todas las legumbres',mac:'Jengibre y cúrcuma, sustrato nuevo cada año',fij:'Espárrago, alcaucil, frutilla y laurel: lugar fijo, no rotan'};
+gr.innerHTML=Object.keys(GR).map(k=>`<article class="card" style="--c:${GR[k][1]}"><h3>${GR[k][0]}</h3><p style="margin:6px 0 0">${gi[k]}</p></article>`).join('');
+// 12 letras de enero a diciembre. S sembrar/plantar, C crece, H cosecha, R reposo o no conviene
+const C1=[
+['Romero','HHSSHHHHSSSH','Perenne. Crece fuerte en primavera-verano y sigue activo en invierno, más lento.'],
+['Tomillo','HHSSHHHHSSSH','Perenne. Se mantiene todo el año; sacá flores secas para que rebrote.'],
+['Orégano','HHSSHRRCSSSH','Perenne. En invierno se seca y rebrota en agosto.'],
+['Salvia','HHSSHHHHSSSH','Perenne. Se da bien todo el año; la poda tras la floración la renueva.'],
+['Ciboulette','HHHHHRRCSSHH','Perenne. En invierno se achica y rebrota en primavera.'],
+['Cebollino chino','HHHHHRRCSSSH','Perenne. Se achica con el frío y vuelve en agosto-septiembre.'],
+['Cebolla de verdeo','HSSSSCHHHSCH','Cosechás hojas de afuera y rebrota. El mejor momento para sembrar es feb-may.'],
+['Albahaca','HHHHRRRRSSHH','Anual. Muere con el frío de mayo; se vuelve a sembrar en septiembre.'],
+['Menta','HHHHHRRCSSHH','Perenne e invasiva. Pierde hojas en invierno y rebrota sola.'],
+['Perejil','HSSSSCHSSSSH','Bianual. Rinde mejor en meses frescos; en verano sufre el calor.'],
+['Cilantro','RRSSSHHSSHRR','Anual. Siembra escalonada en meses frescos; en verano se espiga.'],
+['Mejorana','HHSSHHRCSSSH','Perenne. Se achica en pleno invierno.'],
+['Eneldo','RRSSHHHHSSHR','Anual. En verano se espiga; sembrá escalonado.'],
+['Melisa','HHHHRRRCSSHH','Perenne. Pierde hojas en invierno y rebrota.'],
+['Lavanda','HHSSRRRRSSHH','Perenne. Florece en verano; podar después.'],
+['Caléndula','HRSSHHHSSHHH','Anual. Florece en otoño y primavera; se resiembra.'],
+['Capuchina','HHHHRRRRSSSH','Anual. Muere con las heladas; florece todo el verano.']];
+const C2=[
+['Tomate cherry','HHHHRRRSSSCH','Almácigo en agosto. Muere con los primeros fríos de mayo.'],
+['Tomate grande','HHHHRRRSSSCC','Trasplante sep-nov. Muere en mayo; tutores firmes por el viento.'],
+['Morrón','CHHHRRRSSSSC','Trasplante oct-nov. Con heladas afuera no sobrevive; adentro puede pasar el invierno.'],
+['Ají','CHHHHRRSSSSC','Almácigo ago-sep. Produce hasta las primeras heladas.'],
+['Habanero','CCHHHHRSSSSC','Tarda más en fructificar. Mejor en maceta adentro.'],
+['Anco','CHHHHRRRRSSS','Guías de hasta 4 m. Se cosecha cuando el cabo se seca.'],
+['Zapallo cabutia','CHHHHRRRRSSS','Igual que el anco. Se conserva varios meses curado.'],
+['Pepino','HHHHRRRRSSCH','Adentro se adelanta desde septiembre. Muere con el frío.'],
+['Maíz','CHHHRRRRRSSS','Ciclo de 3-4 meses. Sembrá en bloque para que polinice.'],
+['Acelga','HSSSCHHHSSSH','Casi todo el año. Cosechás hojas de afuera y rebrota.'],
+['Espinaca','RRSSHHHSHHRR','Cultivo de frío. En verano se espiga.'],
+['Remolacha','HSSSCHHSSSSH','Dos siembras al año. También comés las hojas.'],
+['Repollo (blanco y colorado)','RSSSSCHHHHRR','Almácigo en meses frescos; con calor se llena de orugas.'],
+['Rabanito','RSHHHHHHHHHR','Siembra escalonada cada 15 días. En pleno verano, solo con sombra.'],
+['Mostaza (hoja)','RRSSHHHHSHRR','Crece rápido en meses frescos.'],
+['Lechuga','RRSSCHHHSSHR','Se da en frío y primavera. En verano se espiga.'],
+['Puerro','CSSSSCCSHHHC','Ciclo largo de 4-6 meses. Ocupa lugar mucho tiempo.'],
+['Cebollino chino','HHHHHRRCSSSH','Perenne. Se divide la mata cada 2-3 años.'],
+['Anís','CHHHRRRRSSSC','Siembra directa, no trasplanta bien. Se cosechan las semillas.'],
+['Jengibre','CCCCHHHRRSSC','El follaje se seca en mayo; ahí desenterrás el rizoma.'],
+['Cúrcuma','CCCCHHHRRSSC','Igual que el jengibre. No tolera heladas.'],
+['Espárrago','CCCCRRSSSCCC','Coronas en invierno. Años 1-2 solo crece; desde el año 3 cosechás turiones en sep-nov.'],
+['Arveja','RRSSSSCHHHRR','Cultivo de frío. Con tutor; le deja nitrógeno al suelo.'],
+['Haba','RRRSSSSCHHHR','Siembra de otoño-invierno. Despuntar contra el pulgón.'],
+['Poroto chaucha','HHHRRRRRRSSS','Siembra de calor. Cosecha continua y muere con el frío.'],
+['Poroto seco','CHHHRRRRRSSS','Cosechás cuando la vaina se seca en la planta.'],
+['Garbanzo','RRRRRSSSCCHH','Siembra de invierno, cosecha a fin de primavera.'],
+['Edamame','CHHHRRRRRSSS','Soja verde. Planta de calor.'],
+['Zanahoria','HSSSCHHHSSSC','Dos siembras al año. Ralear a 5 cm.'],
+['Papa','HRRRRRRSSCCH','Planta en agosto, cosecha en diciembre. Aporcar.'],
+['Batata','CCHHHRRRRSSS','Planta de calor. Cosecha antes de las heladas.'],
+['Cebolla de bulbo (blanca y morada)','HRSSSCCCCCHH','Almácigo en otoño, trasplante en invierno, cosecha en noviembre.'],
+['Ajo','RRRSSSCCCCHH','Se planta en otoño, cosecha cuando se seca el follaje.'],
+['Nabo','RRSSHHHHHRRR','Raíz de frío. Rápido y fácil.'],
+['Brócoli','RSSSSCHHHHRR','Almácigo en meses frescos. Cosecha en invierno.'],
+['Coliflor','RSSSCCHHHHRR','Como el brócoli, pero más exigente con el agua.'],
+['Rúcula','RRSSHHHHHHHR','Crece rápido. En verano se espiga.'],
+['Kale','RSSSSCHHHHHR','Rústica. Cosechás hojas de abajo hacia arriba.'],
+['Radicheta','RSSSSCHHHHRR','Cultivo de frío, algo amarga.'],
+['Pak choi','RRSSSHHSSHRR','Crece rápido. Se espiga con calor.'],
+['Zapallito de tronco','HHHHRRRRRSSH','Cosecha continua. Cortá chicos para que siga dando.'],
+['Berenjena','CHHHRRRSSSSC','Como el morrón: calor, y sin heladas.'],
+['Frutilla','CCCSSSCCCHHH','Perenne corta. Plantines en otoño, fruta en primavera.'],
+['Sandía','CHHRRRRRRSSC','Ocupa mucho espacio. Calor pleno.'],
+['Melón','CHHRRRRRRSSC','Como la sandía.'],
+['Apio','CSSCCCHSSCCH','Ciclo largo y exigente en agua.'],
+['Hinojo','HSSCHHRSSCCH','Dos siembras al año. Bulbo y semillas.'],
+['Alcaucil','RSSSCCCCHHHR','Perenne. Cosecha en primavera, varios años.'],
+['Laurel','HHHHHHHHSSSH','Árbol perenne. Cosechás hojas todo el año.']];
+const MS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],nm=new Date().getMonth();
+const cyc=(d)=>'<tr><th>Planta</th>'+MS.map((m,i)=>`<th class="${i==nm?'now':''}">${m}</th>`).join('')+'</tr>'+d.map(r=>`<tr><td class="n"><b>${r[0]}</b><small>${r[2]}</small></td>${[...r[1]].map((c,i)=>`<td class="m c${c} ${i==nm?'now':''}" title="${MS[i]}">${c}</td>`).join('')}</tr>`).join('');
+c1.innerHTML=cyc(C1);c2.innerHTML=cyc(C2);
+const GM={
+sol:{f:'Compost al plantar; potasio (ceniza o abono de frutales) al fructificar. Poco nitrógeno.',t:'Tutor o hilo hacia arriba; sacar los brotes axilares (chupones) del tomate.',c:'Con el color completo y firmes; cortar con tijera.',r:'Tomate 2-4 kg por planta; morrón y berenjena 8-15 frutos.',k:'Salsa, secado y freezer.',s:'Sí, de variedades no híbridas: fermentar y secar la semilla.'},
+cuc:{f:'Compost abundante; riego al pie, sin mojar hojas.',t:'Guías por el suelo o red vertical (pepino).',c:'Zapallos con el cabo seco y la piel dura; pepino y zapallito jóvenes.',r:'Zapallos 3-6 frutos por planta; pepino 10 o más.',k:'Zapallos curados duran meses; pepino en encurtidos.',s:'Sí, pero se cruzan entre variedades.'},
+hoj:{f:'Compost y algo de nitrógeno; crecen rápido.',t:'No necesitan.',c:'Hojas de afuera hacia adentro, o planta entera.',r:'Hojas grandes 500 g-1 kg por planta; las chicas 100-300 g.',k:'Frescas; kale, acelga y espinaca se congelan.',s:'Espigan: dejá una planta para semilla.'},
+ceb:{f:'Poco nitrógeno y compost maduro; evitar estiércol fresco.',t:'Arveja y poroto trepador necesitan tutor; el resto no.',c:'Bulbos con el follaje caído; legumbres según el punto.',r:'Cebolla 100-200 g; ajo 1 cabeza; arveja unos 100 g por planta.',k:'Bulbos curados duran meses; legumbres se secan o congelan.',s:'Legumbres y ajo, muy fácil.'},
+mac:{f:'Compost y humus; riego frecuente sin encharcar.',t:'No necesitan.',c:'Cuando el follaje se seca.',r:'300-800 g por maceta.',k:'Rizoma fresco, rallado o congelado.',s:'Se replanta un trozo del rizoma.'},
+fij:{f:'Compost cada primavera.',t:'Poda de limpieza después de cosechar.',c:'Según la planta, ver ciclo del año.',r:'Mejora cada año.',k:'Frescos o secos según el caso.',s:'Se multiplican por hijuelos, división o corona.'},
+aro:{f:'Poco: compost una vez al año. Más nitrógeno da menos aroma.',t:'Despuntar para que ramifique.',c:'A la mañana, después del rocío.',r:'Cosecha continua.',k:'Se secan o se congelan en cubitos con aceite.',s:'Esqueje o división; albahaca y cilantro por semilla.'}};
+const TUT={'Papa':'Aporcar, sin tutor.','Maíz':'Aporcar la base; sin tutor.','Batata':'Sin tutor; guiar las guías.','Anco':'Guiar la guía por el suelo.','Zapallo cabutia':'Guiar por el suelo.','Pepino':'Tutor o malla vertical de 1,8 m.','Arveja':'Tutor o malla de 1,2 m.','Haba':'Estacas e hilo; despuntar al florecer.','Poroto chaucha':'Enrame solo si es trepador.','Frutilla':'Sin tutor; mulching de paja.'};
+const FR={};'Romero|-8;Tomillo|-10;Orégano|-10;Salvia|-8;Mejorana|-2;Eneldo|-3;Melisa|-10;Lavanda|-10;Caléndula|-3;Capuchina|2;Ciboulette|-15;Cebollino chino|-10;Cebolla de verdeo|-8;Albahaca|10;Menta|-15;Perejil|-8;Cilantro|-5;Tomate cherry|3;Tomate grande|3;Morrón|5;Ají|5;Habanero|8;Anco|3;Zapallo cabutia|3;Pepino|5;Maíz|3;Acelga|-5;Espinaca|-8;Remolacha|-3;Repollo (blanco y colorado)|-8;Rabanito|-3;Mostaza (hoja)|-6;Lechuga|-3;Puerro|-10;Anís|-2;Espárrago|-15;Jengibre|10;Cúrcuma|10;Arveja|-4;Haba|-6;Poroto chaucha|3;Poroto seco|3;Garbanzo|-3;Edamame|3;Zanahoria|-5;Papa|1;Batata|5;Cebolla de bulbo (blanca y morada)|-8;Ajo|-10;Nabo|-5;Brócoli|-8;Coliflor|-3;Rúcula|-5;Kale|-12;Radicheta|-8;Pak choi|-3;Zapallito de tronco|3;Berenjena|8;Frutilla|-10;Sandía|8;Melón|8;Apio|-3;Hinojo|-5;Alcaucil|-5;Laurel|-8'.split(';').forEach(x=>{const a=x.split('|');FR[a[0]]=+a[1]});
+const frio=n=>FR[n]===undefined?'Sin dato':FR[n]>0?'No tolera heladas: se daña por debajo de '+FR[n]+' °C. Protegerla o retirarla (aproximado).':'Aguanta hasta unos '+FR[n]+' °C (aproximado). En Varela hay heladas de -2 a -4 °C.';
+const ASOG=[
+[['Tomate cherry','Tomate grande','Morrón','Ají','Habanero','Berenjena'],'Albahaca, caléndula, zanahoria, cebolla','Hinojo, repollo, papa'],
+[['Papa'],'Poroto, maíz, caléndula','Tomate, pepino, zapallos'],
+[['Anco','Zapallo cabutia','Zapallito de tronco','Sandía','Melón','Pepino','Maíz'],'Maíz, poroto, capuchina, eneldo (pepino)','Papa, hinojo'],
+[['Lechuga','Rúcula','Radicheta','Rabanito','Espinaca','Acelga','Remolacha','Mostaza (hoja)','Pak choi'],'Zanahoria, cebolla, rabanito, frutilla','Hinojo'],
+[['Zanahoria','Apio','Anís'],'Cebolla, puerro, lechuga, rabanito','Eneldo, hinojo'],
+[['Cebolla de bulbo (blanca y morada)','Ajo','Puerro','Cebollino chino','Cebolla de verdeo','Ciboulette'],'Zanahoria, lechuga, remolacha, tomate, frutilla','Arveja, haba, poroto'],
+[['Arveja','Haba','Poroto chaucha','Poroto seco','Garbanzo','Edamame'],'Zanahoria, maíz, pepino, rabanito','Cebolla, ajo, hinojo'],
+[['Repollo (blanco y colorado)','Brócoli','Coliflor','Kale','Nabo'],'Eneldo, tomillo, caléndula, cebolla, apio','Tomate, frutilla'],
+[['Hinojo'],'Pocas: va mejor solo','Casi todo, incluso tomate y legumbres'],
+[['Albahaca','Capuchina','Caléndula'],'Tomate, morrón, repollo, la mayoría','Poco: la albahaca no tolera la ruda'],
+[['Menta','Melisa'],'Repollo y tomate (la menta espanta orugas)','Perejil; va sola en su maceta'],
+[['Frutilla'],'Ajo, cebolla, lechuga','Repollo']];
+const asoc=n=>(ASOG.find(a=>a[0].includes(n))||[0,'Con caléndula y otras aromáticas','Sin datos especiales']).slice(1);
+const SIEM=[
+[['Tomate cherry','Tomate grande','Morrón','Ají','Habanero','Berenjena'],'Almácigo: semilla a 0,5 cm, germina en 6-10 días a 22-28 °C. Trasplantar con 15-20 cm.'],
+[['Anco','Zapallo cabutia','Zapallito de tronco','Sandía','Melón','Pepino','Maíz','Poroto chaucha','Poroto seco','Edamame'],'Directo, semilla a 3-4 cm. Germina en 4-8 días con suelo tibio (mín. 15 °C).'],
+[['Lechuga','Rúcula','Radicheta','Mostaza (hoja)','Pak choi','Espinaca'],'Directo o almácigo, semilla a 0,5-1 cm. Germina en 3-7 días a 10-20 °C; la lechuga necesita luz.'],
+[['Acelga','Remolacha'],'Directo, a 2 cm. Germina en 7-12 días. Ralear cuando salen.'],
+[['Repollo (blanco y colorado)','Brócoli','Coliflor','Kale','Nabo'],'Almácigo a 0,5-1 cm, germina en 4-7 días. Trasplantar con 4-5 hojas (nabo, directo).'],
+[['Rabanito'],'Directo a 1 cm. Germina en 3-4 días.'],
+[['Puerro','Cebolla de bulbo (blanca y morada)'],'Almácigo a 1 cm, germina en 7-12 días. Trasplantar cuando el tallo es como un lápiz.'],
+[['Ajo'],'Diente con la punta hacia arriba, a 4-5 cm de profundidad.'],
+[['Arveja','Haba','Garbanzo'],'Directo a 3-5 cm. Germina en 7-10 días con suelo fresco.'],
+[['Zanahoria'],'Directo a 0,5 cm. Germina lento (10-20 días): mantener húmedo.'],
+[['Apio','Hinojo','Anís','Eneldo','Cilantro','Perejil'],'Directo o almácigo a 0,5-1 cm. Perejil y apio tardan 10-20 días; anís y eneldo no trasplantan bien.'],
+[['Papa','Batata','Jengibre','Cúrcuma','Espárrago','Frutilla','Alcaucil'],'Sin semilla: tubérculo, guía, rizoma, corona o plantín, a 5-15 cm de profundidad.'],
+[['Albahaca','Capuchina','Caléndula'],'Almácigo o directo a 1 cm. Germina en 5-8 días; albahaca desde 15 °C.'],
+[['Menta','Melisa','Romero','Tomillo','Orégano','Salvia','Mejorana','Lavanda','Laurel','Ciboulette','Cebollino chino','Cebolla de verdeo'],'Plantín, esqueje o división de mata. Por semilla germinan lento (15-30 días).']];
+const siem=n=>(SIEM.find(a=>a[0].includes(n))||[0,'Plantín o esqueje'])[1];
+const grpOf=n=>{const r=SUE.find(x=>x[0]==n);return r?r[1]:'aro'};
+function detail(n){const m=GM[grpOf(n)],a=asoc(n);return `<details><summary>Más datos</summary><dl><dt>Va bien con</dt><dd>${a[0]}</dd><dt>Evitar cerca</dt><dd>${a[1]}</dd><dt>Siembra</dt><dd>${siem(n)}</dd><dt>Frío</dt><dd>${frio(n)}</dd><dt>Abono</dt><dd>${m.f}</dd><dt>Tutor y poda</dt><dd>${TUT[n]||m.t}</dd><dt>Cosecha</dt><dd>${m.c}</dd><dt>Rinde</dt><dd>${m.r}</dd><dt>Cocina</dt><dd>${m.k}</dd><dt>Semillas</dt><dd>${m.s}</dd><dt>Mis notas</dt><dd><textarea class="obs" data-n="${encodeURIComponent(n)}" rows="2" style="width:100%;font:inherit;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);padding:6px" placeholder="Tus observaciones de esta planta">${((window.OBS||{})[n]||'').replace(/</g,'&lt;')}</textarea></dd></dl></details>`}
+
+const ALL=[...C1.map(r=>[r[0],r[1],'Colgante']),...C2.map(r=>[r[0],r[1],'Suelo'])];
+const MN=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const SN=['Verano: regá temprano, dale sombra a las lechugas y ventilá el invernadero.','Otoño: época de crucíferas, ajo, cebolla y habas. Las primeras heladas llegan en mayo.','Invierno: heladas, cubrí lo sensible y ventilá al mediodía.','Primavera: almácigos y trasplantes; cuidá los últimos fríos de septiembre.'];
+let mm=nm;
+function mesR(){mchips.innerHTML=MN.map((m,i)=>`<button class="chip" data-i="${i}" aria-pressed="${i==mm}">${m}</button>`).join('');
+mchips.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{mm=+b.dataset.i;mesR()});
+mnote.textContent=SN[[0,0,1,1,1,2,2,2,3,3,3,0][mm]];
+const L=[['S','Sembrar o plantar','var(--g5)'],['H','Cosechar','var(--ok)'],['C','Está creciendo','#6fb56a'],['R','En reposo o no conviene','var(--g6)']];
+mgrid.innerHTML=L.map(l=>{const it=ALL.filter(a=>a[1][mm]==l[0]);return `<article class="card" style="--c:${l[2]}"><h3>${l[1]} (${it.length})</h3><p style="margin:8px 0 0">${it.map(a=>`<span class="nm">${a[0]}</span>`).join('')||'Nada este mes.'}</p></article>`}).join('')}
+const KEY='huerta-reg-v1';let REG=[];try{REG=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){}
+const FK='huerta-fotos-v1';let FOT={};try{FOT=JSON.parse(localStorage.getItem(FK)||'{}')}catch(e){}
+const shrink=f=>new Promise((ok,no)=>{const fr=new FileReader();fr.onerror=no;fr.onload=()=>{const im=new Image();im.onerror=no;im.onload=()=>{const k=Math.min(1,800/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);ok(c.toDataURL('image/jpeg',0.7))};im.src=fr.result};fr.readAsDataURL(f)});
+const sv=()=>{try{localStorage.setItem(KEY,JSON.stringify(REG))}catch(e){}};
+const NAMES=[...COL.map(x=>x[0]),...SUE.map(x=>x[0])].sort((a,b)=>a.localeCompare(b));
+rp.innerHTML=NAMES.map(n=>`<option>${n}</option>`).join('');
+const SECS=['Exterior A','Exterior B','Exterior C','Exterior D','Interior 1','Interior 2','Interior 3','Maceta o colgante'];
+rs.innerHTML=SECS.map(n=>`<option>${n}</option>`).join('');
+rd.value=new Date().toISOString().slice(0,10);
+function dias(n){const r=SUE.find(x=>x[0]==n);if(!r)return null;const m=r[5].match(/(\d+(?:,\d+)?)/);if(!m)return null;const v=parseFloat(m[1].replace(',','.'));return Math.round(/año/.test(r[5])?v*365:/mes/.test(r[5])?v*30:v)}
+const fm=d=>new Date(d).toLocaleDateString('es-AR',{day:'numeric',month:'short',year:'numeric'});
+function regR(){rfc.textContent=Object.keys(FOT).length+' fotos guardadas (entran unas 30 a 50 en este navegador).';rl.innerHTML=REG.length?[...REG].sort((a,b)=>b.d.localeCompare(a.d)).map(r=>{const k=r.a=='Cosecha'?null:dias(r.n),t=new Date(r.d),now=Date.now(),pas=Math.round((now-t)/864e5);let est=r.a=='Cosecha'?'Cosecha registrada':'Perenne o cosecha continua';let bar='';if(k){const e=new Date(t.getTime()+k*864e5),f=Math.round((e-now)/864e5);est=f>0?`Cosecha estimada: ${fm(e)} (faltan ${f} días)`:`Lista para cosechar desde ${fm(e)}`;bar=`<div class="bd"><i style="width:${Math.min(100,Math.max(0,pas/k*100))}%"></i></div>`}
+return `<article class="card" style="--c:${GR[grpOf(r.n)]?GR[grpOf(r.n)][1]:'var(--g3)'}"><button class="del" data-id="${r.id}">Borrar</button><h3>${r.n}</h3><span class="tag">${r.s}</span> <span class="nm">${r.a||'Siembra'}${r.q?' · '+r.q:''}</span><p style="margin:0">${fm(r.d)} (hace ${Math.max(0,pas)} días)</p>${r.nt?`<p style="margin:4px 0;font-style:italic;font-size:14px">${r.nt.replace(/</g,'&lt;')}</p>`:''}${bar}<p style="margin:0;color:var(--mut);font-size:14px">${est}</p>${FOT[r.id]?`<img src="${FOT[r.id]}" alt="Foto de ${r.n}" style="width:100%;border-radius:8px;margin-top:8px">`:''}</article>`}).join(''):'<p style="padding:0 18px">Todavía no anotaste nada. Elegí una planta, un sector y la fecha, y tocá Agregar.</p>';
+rl.querySelectorAll('.del').forEach(b=>b.onclick=()=>{REG=REG.filter(r=>r.id!=b.dataset.id);if(FOT[b.dataset.id]){delete FOT[b.dataset.id];try{localStorage.setItem(FK,JSON.stringify(FOT))}catch(e){}}sv();regR();tareas()})}
+ra.onclick=async()=>{const n=rp.value,sc=rs.value,d=rd.value,g=grpOf(n);if(!d)return;
+const rep=REG.find(r=>r.s==sc&&sc!='Maceta o colgante'&&g!='fij'&&g!='aro'&&grpOf(r.n)==g&&r.n!=n||r.s==sc&&sc!='Maceta o colgante'&&g!='fij'&&g!='aro'&&grpOf(r.n)==g&&Math.abs(new Date(r.d)-new Date(d))<1095*864e5);
+const fam=REG.find(r=>r.s==sc&&sc!='Maceta o colgante'&&g!='fij'&&g!='aro'&&grpOf(r.n)==g&&Math.abs(new Date(r.d)-new Date(d))<1095*864e5);
+rw.textContent=fam&&racc.value!='Cosecha'?`Ojo: en ${sc} ya anotaste ${fam.n} (${GR[g][0]}) hace menos de 3 años. Conviene rotar a otro grupo.`:'';
+const en={id:Date.now(),n,s:sc,d,a:racc.value,q:rq.value,nt:rn.value.trim()};
+if(rf.files&&rf.files[0]){try{FOT[en.id]=await shrink(rf.files[0]);localStorage.setItem(FK,JSON.stringify(FOT))}catch(e){delete FOT[en.id];rw.textContent=(rw.textContent+' La foto no entró (espacio lleno o no se pudo leer). El registro sí se guardó.').trim()}}
+REG.push(en);rn.value='';rf.value='';sv();regR();tareas()};
+mesR();regR();
+const TK='huerta-tareas-v1';let DONE={};try{DONE=JSON.parse(localStorage.getItem(TK)||'{}')}catch(e){}
+const FIJ=[['Regar temprano y al pie','Abrir las ventilaciones del invernadero','Revisar el envés de las hojas: pulgones y arañuela'],['Hacer almácigos de crucíferas','Sumar compost a los sectores libres','Poner malla antiinsectos'],['Cubrir las plantas sensibles antes de la helada','Ventilar el invernadero al mediodía','Regar poco y a media mañana'],['Trasplantar almácigos cuando pase el riesgo de helada','Poner tutores a tomates, pepinos y arvejas','Revisar babosas y caracoles']];
+const ESTAC=[0,0,1,1,1,2,2,2,3,3,3,0];
+const est=r=>{if(r.a=='Cosecha')return null;const k=dias(r.n);return k?new Date(new Date(r.d).getTime()+k*864e5):null};
+function tareas(){const h=new Date();h.setHours(0,0,0,0);const f=new Date(h.getTime()+6*864e5),ms=[...new Set([h.getMonth(),f.getMonth()])],wk=h.toISOString().slice(0,10);
+swk.textContent=`Del ${fm(h)} al ${fm(f)}. Se arma con el ciclo del año, tu registro y la estación.`;
+const u=a=>[...new Set(a)],has=(a,cs)=>ms.some(m=>cs.includes(a[1][m]));
+const T=[];const sw=u(ALL.filter(a=>has(a,'S')).map(a=>a[0])),hv=u(ALL.filter(a=>has(a,'H')).map(a=>a[0]));
+if(sw.length)T.push(['Sembrar o plantar',sw.join(', ')]);if(hv.length)T.push(['Cosechar',hv.join(', ')]);
+if(ms.some(m=>m>=4&&m<=8)){const fr=u([...ALL.filter(a=>FR[a[0]]>0&&has(a,'SCH')).map(a=>a[0]),...REG.filter(r=>FR[r.n]>0).map(r=>r.n)]);if(fr.length)T.push(['Proteger del frío',fr.join(', ')+'. Cubrir o llevar adentro antes de la helada.'])}
+REG.forEach(r=>{const e=est(r);if(!e)return;const d=Math.round((e-h)/864e5);if(d<=7&&d>=-30)T.push(['Cosecha de '+r.n+' ('+r.s+')',d>=0?'Estimada en '+d+' días, el '+fm(e):'Ya debería estar lista desde el '+fm(e)])});
+REG.forEach(r=>{const p=Math.floor((h-new Date(r.d))/864e5),a=r.a||'Siembra';
+if(a=='Siembra'&&TR[r.n]&&p>=TR[r.n]-7&&p<=TR[r.n]+14)T.push(['Trasplantar '+r.n,(p>=TR[r.n]?'Ya pasaron '+p+' días desde la siembra. ':'Faltan unos '+(TR[r.n]-p)+' días. ')+'Trasplantá cuando tenga 4 a 6 hojas verdaderas. Fecha estimada.']);
+if(a=='Siembra'&&p>=7&&p<25)T.push(['Control de germinación: '+r.n,'Sembrada hace '+p+' días. Mantené húmeda la superficie.']);
+if(a=='Trasplante'&&/Tomate|Morrón|Berenjena|Ají|Habanero/.test(r.n)&&p>=15&&p<70)T.push(['Poda y estructura: '+r.n,'Trasplantada hace '+p+' días. Revisá los amarres y sacá los chupones de abajo.']);
+if(a=='Trasplante'&&[11,0,1].includes(h.getMonth())&&p>=10&&p<40)T.push(['Revisar calor y plagas: '+r.n,'Mirá el envés de las hojas y regá temprano.'])});
+if(REG.some(r=>/lluvia|tormenta/i.test(r.nt||'')&&(h-new Date(r.d))/864e5<=7))T.push(['Alerta de hongos','Anotaste lluvia o tormenta. Aplicá cobre preventivo en solanáceas de exterior (tomate, morrón, papa).']);
+(WXA||[]).slice().reverse().forEach(a=>T.unshift(['Alerta de clima',a]));
+FIJ[ESTAC[h.getMonth()]].forEach(t=>T.push([t,'']));
+tl.innerHTML=T.map(t=>{const id=wk+'|'+t[0],ok=DONE[id];return `<label class="tk ${ok?'ok':''}"><input type="checkbox" data-id="${id}" ${ok?'checked':''}><span><b>${t[0]}</b>${t[1]}</span></label>`}).join('');
+const upd=()=>{const n=tl.querySelectorAll('input:checked').length;spg.textContent=`${n} de ${T.length} hechas`};upd();
+tl.querySelectorAll('input').forEach(i=>i.onchange=()=>{DONE[i.dataset.id]=i.checked;if(!i.checked)delete DONE[i.dataset.id];try{localStorage.setItem(TK,JSON.stringify(DONE))}catch(e){}i.closest('.tk').classList.toggle('ok',i.checked);upd()})}
+let DL=null;(async()=>{try{DL=await claude.use('downloads')}catch(e){}})();
+function csvTodo(){const q=v=>'"'+String(v).replace(/"/g,'""')+'"',mdy=d=>`${d.getMonth()+1}/${d.getDate()}/${d.getFullYear()}`;
+const hoy=new Date();hoy.setHours(0,0,0,0);const rows=[];
+const add=(t,d,desc)=>rows.push([q(t),mdy(d),'9:00 AM',mdy(d),'9:30 AM','False',q(desc),'','False'].join(','));
+REG.forEach(r=>{const e=est(r);if(e&&e>=new Date(hoy.getTime()-30*864e5))add('Cosechar '+r.n,e,r.s+', plantado el '+fm(r.d)+'. Fecha estimada.')});
+REG.forEach(r=>{const f=TR[r.n];if(r.a=='Siembra'&&f){const d=new Date(new Date(r.d+'T00:00:00').getTime()+f*864e5);if(d>=hoy)add('Trasplantar '+r.n,d,r.s+'. Cuando tenga 4 a 6 hojas. Fecha estimada.')}});
+for(let o=0;o<12;o++){let d=new Date(hoy.getFullYear(),hoy.getMonth()+o,1);if(d<hoy)d=hoy;const m=d.getMonth(),S=[...new Set(ALL.filter(a=>a[1][m]=='S').map(a=>a[0]))],H=[...new Set(ALL.filter(a=>a[1][m]=='H').map(a=>a[0]))];add('Plan de huerta: '+MN[m],d,'Sembrar o plantar: '+S.join(', ')+'. Cosechar: '+H.join(', ')+'. Fechas orientativas.')}
+const lun=new Date(hoy);lun.setDate(lun.getDate()+((8-lun.getDay())%7||7));
+for(let w=0;w<26;w++){add('Huerta: revisar tareas de la semana',addDays(lun,w*7),'Abrí la pestaña Esta semana en tu página de la huerta.')}
+return 'Subject,Start Date,Start Time,End Date,End Time,All Day Event,Description,Location,Private\n'+rows.join('\n')}
+cs.onclick=async()=>{const csv=csvTodo();
+try{if(DL){await DL.save({filename:'huerta-google-calendar.csv',data:csv});cm.textContent='Listo. Importalo desde calendar.google.com en una computadora (Configuración, Importar y exportar).'}else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='huerta-google-calendar.csv';a.click();cm.textContent='Descarga iniciada.'}}catch(e){cm.textContent=e&&e.code=='declined'?'Cancelaste la descarga.':'No se pudo descargar desde esta vista. Abrí el archivo .html descargado y probá desde ahí.'}};
+function icsEsc(v){return String(v??'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n')}
+function ymd(d){return d.toISOString().slice(0,10).replace(/-/g,'')}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function icsEvent(title,date,desc,uid){const d=new Date(date);d.setHours(0,0,0,0);const next=addDays(d,1);return `BEGIN:VEVENT\r\nUID:${uid}\r\nDTSTAMP:${ymd(new Date())}T120000Z\r\nDTSTART;VALUE=DATE:${ymd(d)}\r\nDTEND;VALUE=DATE:${ymd(next)}\r\nSUMMARY:${icsEsc(title)}\r\nDESCRIPTION:${icsEsc(desc)}\r\nBEGIN:VALARM\r\nTRIGGER:PT9H\r\nACTION:DISPLAY\r\nDESCRIPTION:${icsEsc(title)}\r\nEND:VALARM\r\nEND:VEVENT\r\n`}
+function generarICS(){
+ const eventos=[];let seq=0;const uid=()=>`huerta-varela-${Date.now()}-${seq++}@huerta-varela`;
+ const hoy=new Date();hoy.setHours(0,0,0,0);
+ // 1) Registro personal: siembra + cosecha estimada.
+ REG.forEach(r=>{
+   const si=new Date(r.d+'T00:00:00');
+   eventos.push(icsEvent('🌱 Siembra: '+r.n,si,`Sector: ${r.s}. Registrado en Mi huerta en Varela.`,uid()));
+   const tf=TR[r.n];if(r.a=='Siembra'&&tf)eventos.push(icsEvent('🪴 Trasplantar: '+r.n,new Date(si.getTime()+tf*864e5),`Sector: ${r.s}. Con 4 a 6 hojas verdaderas.`,uid()));
+   const e=est(r);
+   if(e) eventos.push(icsEvent('🧺 Cosecha estimada: '+r.n,e,`Sector: ${r.s}. Fecha calculada a partir de la siembra del ${fm(si)}.`,uid()));
+ });
+ // 2) Plan mensual: próximos 12 meses, según el ciclo anual de la página.
+ for(let off=0;off<12;off++){
+   const d=new Date(hoy.getFullYear(),hoy.getMonth()+off,1);const m=d.getMonth();
+   const si=ALL.filter(a=>a[1][m]==='S').map(a=>a[0]);
+   const co=ALL.filter(a=>a[1][m]==='H').map(a=>a[0]);
+   const partes=[];if(si.length)partes.push('Sembrar/plantar: '+si.join(', '));if(co.length)partes.push('Cosechar: '+co.join(', '));
+   if(partes.length) eventos.push(icsEvent('📅 Plan de huerta — '+MN[m],d,partes.join('\n\n')+'\n\nLas fechas son orientativas y dependen del clima de Varela.',uid()));
+ }
+ // 3) Tareas de esta semana, usando exactamente la lógica de la pantalla.
+ const f=new Date(hoy.getTime()+6*864e5),ms=[...new Set([hoy.getMonth(),f.getMonth()])];
+ const u=a=>[...new Set(a)],has=(a,cs)=>ms.some(m=>cs.includes(a[1][m]));
+ const T=[];const sw=u(ALL.filter(a=>has(a,'S')).map(a=>a[0])),hv=u(ALL.filter(a=>has(a,'H')).map(a=>a[0]));
+ if(sw.length)T.push('Sembrar o plantar: '+sw.join(', '));if(hv.length)T.push('Cosechar: '+hv.join(', '));
+ if(ms.some(m=>m>=4&&m<=8)){const fr=u([...ALL.filter(a=>FR[a[0]]>0&&has(a,'SCH')).map(a=>a[0]),...REG.filter(r=>FR[r.n]>0).map(r=>r.n)]);if(fr.length)T.push('Proteger del frío: '+fr.join(', ')+'. Cubrir o llevar adentro antes de la helada.');}
+ REG.forEach(r=>{const e=est(r);if(!e)return;const dd=Math.round((e-hoy)/864e5);if(dd<=7&&dd>=-30)T.push('Cosecha de '+r.n+' ('+r.s+'): '+(dd>=0?'estimada en '+dd+' días, el '+fm(e):'ya debería estar lista desde el '+fm(e)));});
+ FIJ[ESTAC[hoy.getMonth()]].forEach(t=>T.push(t));
+ if(T.length)eventos.push(icsEvent('☑️ Tareas de la semana',hoy,T.join('\n'),uid()));
+ const lun=new Date(hoy);lun.setDate(lun.getDate()+((8-lun.getDay())%7||7));
+eventos.push(icsEvent('🌿 Huerta: tareas de la semana',lun,'Abrí la página, pestaña Esta semana, y revisá qué sembrar, cosechar y proteger.',uid()).replace('SUMMARY:','RRULE:FREQ=WEEKLY;BYDAY=MO;COUNT=52\r\nSUMMARY:'));
+const cal=`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Mi huerta en Varela//Calendario//ES\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:Mi huerta en Varela\r\n${eventos.join('')}END:VCALENDAR\r\n`;
+ return cal;
+}
+ci.onclick=async()=>{try{const ics=generarICS();if(DL){await DL.save({filename:'huerta-varela-calendario.ics',data:ics});cm.textContent='Listo. Importá huerta-varela-calendario.ics en Google Calendar.'}else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar;charset=utf-8'}));a.download='huerta-varela-calendario.ics';a.click();cm.textContent='Descarga iniciada.'}}catch(e){cm.textContent=e&&e.code=='declined'?'Cancelaste la descarga.':e&&e.code=='rejected_extension'?'Esta vista no permite bajar .ics. Usá el archivo .html descargado, o el botón CSV de al lado.':'No se pudo generar el calendario desde esta vista.'}};
+function goTab(id){const b=document.querySelector(`nav button[data-t="${id}"]`);if(b)b.click();window.scrollTo({top:0,behavior:'smooth'});}
+function updateDashboard(){
+ const now=new Date(),m=now.getMonth();
+ document.getElementById('kCultivos').textContent=COL.length+SUE.length;
+ document.getElementById('kColgantes').textContent=COL.length;
+ document.getElementById('kReg').textContent=REG.length;
+ document.getElementById('kCosechas').textContent=REG.filter(est).length;
+ document.getElementById('seasonNow').textContent=seasonLabel(m)+' · '+now.toLocaleDateString('es-AR',{month:'long',year:'numeric'});
+ document.getElementById('monthName').textContent='Qué mirar en '+now.toLocaleDateString('es-AR',{month:'long'});
+ const tips=['Priorizá protección del frío y cultivos de hoja. Revisá ventilación al mediodía.','Con temperaturas bajas, reducí riego y cuidá las especies sensibles a heladas.','Prepará trasplantes y aumentá gradualmente la exposición al exterior.','Controlá calor, riego temprano y ventilación; revisá plagas en el envés de las hojas.'];
+ document.getElementById('monthSummary').textContent=tips[Math.floor(((m+1)%12)/3)];
+ document.getElementById('homeTasks').innerHTML=[
+  ['💧 Revisar riego','Regá según la necesidad de cada especie y evitá encharcamientos.'],
+  ['🔎 Inspeccionar hojas','Mirá envés, brotes y tallos antes de que una plaga avance.'],
+  ['🌬️ Revisar invernadero','Ventilación y humedad son claves para prevenir hongos.']
+ ].map(x=>`<article class="card"><h3>${x[0]}</h3><p>${x[1]}</p></article>`).join('');
+}
+const themeBtn=document.getElementById('themeBtn');
+if(themeBtn){themeBtn.onclick=()=>{const dark=document.documentElement.getAttribute('data-theme')==='dark';document.documentElement.setAttribute('data-theme',dark?'light':'dark');localStorage.setItem('huerta-theme',dark?'light':'dark')};const saved=localStorage.getItem('huerta-theme');if(saved)document.documentElement.setAttribute('data-theme',saved);}
+
+tareas();
+
+const CAL=[
+['Lechuga','Lechuga','u',3,60,0.09,14,'Con calor se espiga: en verano sembrá con media sombra.'],
+['Rabanito','Rabanito','u',0.2,30,0.01,14,'Rápido: una tanda chica cada 2 semanas.'],
+['Zanahoria','Zanahoria','u',1,100,0.0125,21,'Tarda en germinar; mantené húmedo.'],
+['Remolacha','Remolacha','u',1,75,0.03,21,'También se comen las hojas.'],
+['Repollo','Repollo (blanco y colorado)','u',10,120,0.27,30,'Ocupa lugar mucho tiempo; con pocas plantas alcanza.'],
+['Brócoli','Brócoli','u',3,100,0.3,21,'Después de la cabeza central da brotes laterales.'],
+['Espinaca','Espinaca','u',0.4,50,0.03,14,'Cultivo de frío; en verano se espiga.'],
+['Rúcula','Rúcula','u',0.25,35,0.01,14,'Crece rápido; cortá las hojas de afuera.'],
+['Puerro','Puerro','u',1,150,0.04,30,'Ciclo largo: empezá con tiempo.'],
+['Cebolla de bulbo','Cebolla de bulbo (blanca y morada)','u',2,200,0.03,30,'Se cultiva una vez por año: calculá lo que necesitás hasta la próxima cosecha.'],
+['Acelga','Acelga','c',1,60,0.1,20,'Cosechás hojas de afuera y rebrota. Renovala a los 5 meses.'],
+['Kale','Kale','c',1,70,0.2,24,'Cosechá las hojas de abajo hacia arriba.'],
+['Tomate cherry','Tomate cherry','c',1.7,90,0.5,10,'Producen varias semanas.'],
+['Pepino','Pepino','c',2.5,60,0.3,10,'Con tutor ocupa poco.'],
+['Zapallito de tronco','Zapallito de tronco','c',4,50,0.8,8,'Cosechá chicos para que siga produciendo.']];
+/*FUENTES*/
+kc.innerHTML=CAL.map(c=>`<option>${c[0]}</option>`).join('');
+const fd=d=>d.toLocaleDateString('es-AR',{day:'numeric',month:'short'});
+function calcR(){const c=CAL.find(x=>x[0]==kc.value)||CAL[0],pe=+kp.value||1,ve=+kv.value||1,mg=(+km.value||0)/100,por=+kr.value||c[3],dem=pe*ve,nec=dem*(1+mg),L=[];let cub=null,tanda=0;
+const ok=ALL.find(a=>a[0]==c[1]);let ep='';if(ok&&ok[1][nm]!='S'){let m=-1;for(let i=1;i<=12;i++){if(ok[1][(nm+i)%12]=='S'){m=(nm+i)%12;break}}ep=`<p style="margin:8px 0 0;color:var(--no);font-weight:600">Este mes no es época de siembra de ${c[0].toLowerCase()}${m>=0?'. La próxima ventana empieza en '+MN[m].toLowerCase():''}.</p>`}
+if(c[2]=='u'){const e=c[6];tanda=Math.max(1,Math.ceil(nec/por*e/7));const sim=Math.ceil(c[4]/e),sue=tanda*sim;cub=tanda*por*(7/e)/(1+mg);
+L.push(`Necesitás unas <b>${Math.round(dem)}</b> porciones por semana (${pe} personas × ${ve} veces).`,`Sembrá una tanda de <b>${tanda}</b> plantas <b>cada ${e} días</b>.`,`Vas a tener unas ${sue} plantas en el suelo a la vez, en unos ${(sue*c[5]).toFixed(1)} m².`,`De la siembra a la cosecha pasan unos ${c[4]} días.`);
+const t=[];for(let i=0;i<6;i++){const d=new Date();d.setDate(d.getDate()+i*e);const h=new Date(d);h.setDate(h.getDate()+c[4]);t.push(`<tr><td>Tanda ${i+1}</td><td>${fd(d)}</td><td>${fd(h)}</td></tr>`)}
+L.push(`<div class="tbl" style="padding:0"><table style="min-width:300px"><tr><th>Siembra escalonada</th><th>Sembrar</th><th>Cosechar desde</th></tr>${t.join('')}</table></div>`,`<small>Si sembrás todo junto, madura todo junto y se pasa. Escalonar es sembrar de a poco, de manera pareja.</small>`)}
+else{const n=Math.max(1,Math.ceil(nec/por)),sem=c[6];cub=n*por/(1+mg);tanda=n;
+L.push(`Necesitás unas <b>${Math.round(dem)}</b> porciones por semana (${pe} personas × ${ve} veces).`,`Plantá <b>${n}</b> plantas. Ocupan unos ${(n*c[5]).toFixed(1)} m².`,`Producen unas ${sem} semanas. Para no quedarte sin cosecha, sumá una segunda tanda de ${Math.max(1,Math.ceil(n/2))} plantas a las ${Math.round(sem/2)} semanas.`,`De la siembra a la primera cosecha pasan unos ${c[4]} días.`)}
+let v='';const kt_=kt.value;if(kt_!==''&&+kt_>0){const t=+kt_,cu=c[2]=='u'?t*por*(7/c[6])/(1+mg):t*por/(1+mg),r=cu/dem,pc=cu/ve;const col=r<.9?'var(--no)':r>1.5?'var(--mid)':'var(--ok)';const tx=r<.9?`Te quedás corto: con ${t} plantas cubrís a unas ${pc.toFixed(1)} personas de ${pe}.`:r>1.5?`Te pasás: con ${t} plantas alcanzaría para unas ${pc.toFixed(1)} personas. Probablemente te sobre más de la mitad.`:`Está bien: con ${t} plantas cubrís a unas ${pc.toFixed(1)} personas.`;v=`<span class="al" style="background:${col}">${tx}</span>`}
+kg.innerHTML=`<article class="card" style="--c:var(--ok)"><h3>${c[0]}</h3>${L.map(x=>x.startsWith('<')?x:`<p style="margin:6px 0">${x}</p>`).join('')}${ep}${v}<p style="margin:10px 0 0;color:var(--mut);font-size:13.5px">${c[7]} Cálculo con ${por} porciones por planta (supuesto, ajustalo en el campo de arriba) y ${Math.round(mg*100)} % de margen.</p></article>`}
+kc.onchange=()=>{kr.value=(CAL.find(x=>x[0]==kc.value)||CAL[0])[3];calcR()};
+[kp,kv,km,kr,kt].forEach(i=>i.oninput=calcR);kr.value=CAL[0][3];calcR();
+var TR={};['Tomate cherry','Tomate grande','Morrón','Ají','Habanero','Berenjena'].forEach(n=>TR[n]=49);['Repollo (blanco y colorado)','Brócoli','Coliflor','Kale','Puerro','Cebolla de bulbo (blanca y morada)','Apio','Lechuga'].forEach(n=>TR[n]=35);
+var OBS={};try{OBS=JSON.parse(localStorage.getItem('huerta-obs-v1')||'{}')}catch(e){}window.OBS=OBS;
+document.addEventListener('input',e=>{const t=e.target;if(t.classList&&t.classList.contains('obs')){OBS[decodeURIComponent(t.dataset.n)]=t.value;try{localStorage.setItem('huerta-obs-v1',JSON.stringify(OBS))}catch(_){}}});
+Object.assign(DIST,{'Tomate cherry':'20-40 cm entre plantas, 80-90 cm entre filas','Tomate grande':'20-40 cm entre plantas, 80-90 cm entre filas','Morrón':'40-45 cm entre plantas, 70-80 cm entre filas','Berenjena':'40-50 cm entre plantas, 70-80 cm entre filas','Papa':'20-30 cm entre tubérculos, 70-75 cm entre filas','Anco':'100-150 cm entre plantas, 200-250 cm entre filas','Zapallo cabutia':'100-150 cm entre plantas, 200-250 cm entre filas','Zapallito de tronco':'80-100 cm entre plantas, 80-100 cm entre filas','Pepino':'60-70 cm entre plantas, 90-120 cm entre filas','Melón':'80-90 cm entre plantas, 120-180 cm entre filas','Sandía':'80-90 cm entre plantas, 120-180 cm entre filas','Maíz':'30-35 cm entre plantas, 70-80 cm entre filas, en bloque','Arveja':'5-10 cm entre plantas, 40-50 cm entre filas','Haba':'25-30 cm entre plantas, 70-80 cm entre filas','Poroto chaucha':'20-30 cm entre plantas, 70-80 cm entre filas','Ajo':'10-15 cm entre dientes, 35-45 cm entre filas','Cebolla de bulbo (blanca y morada)':'10-15 cm entre plantas, 35-45 cm entre filas','Puerro':'5-10 cm entre plantas, 40-45 cm entre filas','Apio':'20-25 cm entre plantas, 40-50 cm entre filas','Hinojo':'30-35 cm entre plantas, 60-70 cm entre filas','Repollo (blanco y colorado)':'40-50 cm entre plantas, 70-80 cm entre filas','Brócoli':'40-50 cm entre plantas, 70-80 cm entre filas','Coliflor':'40-50 cm entre plantas, 70-80 cm entre filas','Rabanito':'5 cm entre plantas, 30-40 cm entre filas','Zanahoria':'Chorrillo ralo (unos 5 cm), 40-45 cm entre filas','Remolacha':'8-10 cm entre plantas, 35-45 cm entre filas','Lechuga':'15-25 cm entre plantas, 25-40 cm entre filas','Espinaca':'5-10 cm entre plantas, 35-45 cm entre filas','Acelga':'15-20 cm entre plantas, 50-70 cm entre filas','Kale':'20-25 cm entre plantas','Rúcula':'Chorrillo apretado (unos 5 cm), 30-40 cm entre filas','Frutilla':'25-30 cm entre plantas, 40-45 cm entre filas','Radicheta':'Chorrillo apretado, 30-35 cm entre filas'});
+const OV={'Tomate cherry':['Almácigo jul-sep, trasplante sep-nov','120-150 días desde la siembra'],'Tomate grande':['Almácigo jul-sep, trasplante sep-nov','120-150 días desde la siembra'],'Morrón':['Almácigo jul-sep, trasplante oct-nov','180-200 días desde la siembra'],'Berenjena':['Almácigo jul-oct, trasplante oct-nov','150-180 días desde la siembra'],'Papa':['Tubérculo ago-sep y ene-feb','120-150 días'],'Anco':['Sep-dic (ago en vasito protegido)','150-180 días'],'Zapallo cabutia':['Sep-dic (ago en vasito protegido)','150-180 días'],'Zapallito de tronco':['Directo sep-ene','90-100 días'],'Pepino':['Sep-nov (ago en vasito), con tutor','100-130 días'],'Sandía':['Sep-oct (ago en vasito)','130-180 días'],'Melón':['Sep-oct (ago en vasito)','130-180 días'],'Maíz':['Sep-ene, en bloque, cada 10-15 días','100-130 días'],'Arveja':['Directo mar-ago, con tutor','120-150 días'],'Haba':['Directo mar-jun','180-200 días'],'Poroto chaucha':['Directo fin de verano, otoño y primavera','90-120 días'],'Ajo':['Dientes mar-may','250-270 días'],'Cebolla de bulbo (blanca y morada)':['Almácigo feb-abr','250-270 días'],'Puerro':['Almácigo feb-may y ago-sep','120-150 días'],'Apio':['Almácigo sep-dic y ene-mar','120-150 días'],'Hinojo':['Directo ene-abr','150-180 días'],'Remolacha':['Directo ago-dic y mar-jun','100-130 días'],'Zanahoria':['Directo: criolla dic-abr, chantenay may-nov','150-180 días'],'Repollo (blanco y colorado)':['Almácigo feb-abr y sep-nov','120-150 días'],'Brócoli':['Almácigo sep-oct y feb-abr','Sin dato confiable de días'],'Coliflor':['Almácigo sep-oct y feb-abr','Sin dato confiable de días'],'Lechuga':['Mar-oct, directa o almácigo','60-90 días'],'Rúcula':['Directo mar-oct','60-80 días'],'Espinaca':['Directo mar-ago','80-90 días'],'Acelga':['Todo el año salvo ene y jul','60-80 días'],'Kale':['Almácigo, todo el año','Unos 180 días (ensayo FAUBA)'],'Rabanito':['Directo casi todo el año, cada 15 días','30-40 días'],'Radicheta':['Directo ago-oct y feb-may','80-100 días']};
+SUE.forEach(r=>{const o=OV[r[0]];if(o){r[4]=o[0];r[5]=o[1]}});
+const CC={'Lechuga':75,'Rúcula':70,'Espinaca':85,'Zanahoria':165,'Remolacha':115,'Repollo':135,'Puerro':135,'Cebolla de bulbo':260,'Acelga':70,'Kale':183,'Tomate cherry':135,'Pepino':115,'Zapallito de tronco':95};
+CAL.forEach(c=>{if(CC[c[0]])c[4]=CC[c[0]];if(c[0]=='Kale')c[5]=0.12;const M={'Zanahoria':0.02,'Remolacha':0.036,'Repollo':0.34,'Brócoli':0.34,'Cebolla de bulbo':0.05,'Puerro':0.03,'Pepino':0.68,'Tomate cherry':0.26,'Rúcula':0.018,'Rabanito':0.018};if(M[c[0]])c[5]=M[c[0]]});
+const SRC={P:['Planificador ProHuerta, INTA (AMBA)','https://argentina.gob.ar/sites/default/files/2023/09/02inta_planifica_tu_huerta.pdf'],G:['Guía "Manos a la huerta", Provincia de Buenos Aires','https://www.ambiente.gba.gob.ar/sites/default/files/03_Folleto%20huerta%20Impuesto.pdf'],U:['Hortalizas de hoja, UNLP','https://aulavirtual.agro.unlp.edu.ar/pluginfile.php/40767/mod_resource/content/1/HORTALIZAS%20DE%20HOJA%202018.pdf'],R:['Nota basada en calendarios del INTA (Río Negro)','https://www.rionegro.com.ar/estar-bien/huerta-en-casa-que-sembrar-en-agosto-para-empezar-a-cosechar-en-pocas-semanas-4664236/?amp=1'],K:['Kale: cómo sembrarlo (Infocampo, ProHuerta)','https://www.infocampo.com.ar/?p=531804'],F:['Ensayo de kale, FAUBA (Infocampo)','https://www.infocampo.com.ar/?p=368197'],A:['Consejos de aromáticas en maceta','https://www.airedesantafe.com.ar/ocio/9-consejos-iniciar-una-huerta-plantas-aromaticas-n134796'],C:['Cúrcuma en Argentina, INTA Simoca','https://bichosdecampo.com/?p=281485'],J:['Jengibre: cultivo y cosecha','https://beta.acuedi.org/book/6623/pdf']};
+const FP='Lechuga,Rúcula,Espinaca,Acelga,Repollo (blanco y colorado),Brócoli,Coliflor,Rabanito,Zanahoria,Remolacha,Radicheta,Tomate cherry,Tomate grande,Morrón,Berenjena,Papa,Batata,Anco,Zapallo cabutia,Zapallito de tronco,Pepino,Melón,Sandía,Maíz,Arveja,Haba,Poroto chaucha,Ajo,Cebolla de bulbo (blanca y morada),Puerro,Apio,Hinojo,Frutilla'.split(',');
+const FX={'Lechuga':'PGR','Rúcula':'PGR','Espinaca':'PGUR','Acelga':'PUR','Repollo (blanco y colorado)':'PU','Rabanito':'PR','Albahaca':'PA','Perejil':'PA','Romero':'AG','Tomillo':'A','Salvia':'A','Lavanda':'A','Menta':'A','Cilantro':'A','Kale':'KF','Jengibre':'J','Cúrcuma':'CJ','Espárrago':'P'};
+const FPAR=['Albahaca','Perejil','Romero','Tomillo','Salvia','Lavanda','Menta','Cilantro','Kale','Jengibre','Cúrcuma','Espárrago'];
+let ffs='all';
+function fuenteR(){const nm=[...new Set([...COL.map(x=>x[0]),...SUE.map(x=>x[0])])].sort((a,b)=>a.localeCompare(b));
+fgr.innerHTML=nm.map(n=>{const st=FP.includes(n)?'ok':FPAR.includes(n)?'parcial':'sin';const cs=FX[n]||(st=='ok'?'P':'');return {n,st,cs}}).filter(x=>ffs=='all'||x.st==ffs).map(x=>{const col={ok:'var(--ok)',parcial:'var(--mid)',sin:'var(--no)'}[x.st],tx={ok:'Distancia, ciclo y época de siembra',parcial:'Solo algunos datos: mirá las fuentes',sin:'Sin fuente verificada: datos orientativos'}[x.st];
+return `<article class="card" style="--c:${col}"><h3>${x.n}</h3><span class="tag">${tx}</span><div>${[...x.cs].map(c=>`<a href="${SRC[c][1]}" target="_blank" rel="noopener" class="nm">${SRC[c][0]}</a>`).join('')}</div></article>`}).join('')}
+document.querySelectorAll('#fue .chip').forEach(b=>b.onclick=()=>{ffs=b.dataset.f;document.querySelectorAll('#fue .chip').forEach(x=>x.setAttribute('aria-pressed',x==b));fuenteR()});
+fuenteR();f1();f2();calcR();
+
+bx.onclick=async()=>{const data=JSON.stringify({v:1,registro:REG,fotos:FOT});try{if(DL){await DL.save({filename:'huerta-copia-seguridad.json',data});bm.textContent='Copia guardada.'}else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));a.download='huerta-copia-seguridad.json';a.click();bm.textContent='Descarga iniciada.'}}catch(e){bm.textContent=e&&e.code=='declined'?'Cancelaste la descarga.':'No se pudo guardar desde esta vista.'}};
+bi.onchange=()=>{const f=bi.files[0];if(!f)return;const fr=new FileReader();fr.onload=()=>{try{const o=JSON.parse(fr.result);if(!Array.isArray(o.registro))throw 0;const ids=new Set(REG.map(r=>r.id));o.registro.forEach(r=>{if(!ids.has(r.id))REG.push(r)});Object.assign(FOT,o.fotos||{});sv();try{localStorage.setItem(FK,JSON.stringify(FOT))}catch(e){}regR();tareas();updateDashboard();bm.textContent='Copia restaurada ('+o.registro.length+' registros).'}catch(e){bm.textContent='El archivo no es una copia válida.'}};fr.readAsText(f)};
+
+var WXA=[];
+const PK='huerta-perfil-v1',WKC='huerta-clima-v1';
+let PER=null,WXD=null;try{PER=JSON.parse(localStorage.getItem(PK)||'null')}catch(e){}try{WXD=JSON.parse(localStorage.getItem(WKC)||'null')}catch(e){}
+const ZON={'Varela':[-34.80,-58.28,0],'Quilmes':[-34.72,-58.26,1],'Berazategui':[-34.76,-58.21,1],'La Plata':[-34.92,-57.95,0],'norte':[-34.45,-58.60,1],'oeste':[-34.65,-58.65,-1]};
+const zk=()=>PER?(PER.z=='sur'?PER.l:PER.z):'Varela',zn=()=>PER?(PER.z=='sur'?'Zona sur · '+PER.l:'Zona '+PER.z):'Zona sur · Varela';
+const TIP=[[30,19],[29,19],[27,17],[23,13],[19,9],[15,6],[15,5],[17,6],[19,9],[23,12],[26,15],[29,18]],LLU=[120,110,135,100,75,55,55,65,75,105,105,105];
+function alertas(d){const A=[],n=Math.min(5,d.time.length),mn=Math.min(...d.temperature_2m_min.slice(0,n)),mx=Math.max(...d.temperature_2m_max.slice(0,n)),ll=Math.max(...d.precipitation_sum.slice(0,n)),vi=Math.max(...d.wind_speed_10m_max.slice(0,n));
+if(mn<=4){const se=[...new Set(REG.map(r=>r.n).filter(x=>FR[x]!==undefined&&mn-2<FR[x]))];A.push(['#2f6fb5','Mínima de '+Math.round(mn)+'° en los próximos 5 días: riesgo de helada. '+(se.length?'Protegé: '+se.join(', ')+'.':'Cubrí lo sensible (tomate, morrón, ají, albahaca).')])}
+if(ll>=20)A.push(['#4f7fa8','Lluvia fuerte prevista ('+Math.round(ll)+' mm). Riesgo de hongos: cobre preventivo en tomate, morrón y papa, y revisá el drenaje.']);
+if(vi>=40)A.push(['#8a7a62','Viento fuerte ('+Math.round(vi)+' km/h): reforzá tutores, bajá las colgantes y cerrá las aberturas del invernadero.']);
+if(mx>=34)A.push(['#c0453a','Calor de '+Math.round(mx)+'°: ventilá el invernadero, regá temprano y sacá las leñosas del techo.']);
+return A}
+function pintarClima(fallo){const z=zk(),f=ZON[z],ok=WXD&&WXD.k==z&&WXD.j&&WXD.j.daily;wxt.textContent='Clima · '+zn();WXA=[];
+if(ok){const j=WXD.j,c=j.current,d=j.daily,hs=Math.round((Date.now()-WXD.t)/36e5);
+wxn.textContent=`Ahora ${Math.round(c.temperature_2m)}° · viento ${Math.round(c.wind_speed_10m)} km/h · lluvia ${c.precipitation} mm`;
+wxs.textContent=(hs<1?'Actualizado hace minutos':'Actualizado hace '+hs+' h')+(fallo?' (no pude conectarme ahora, muestro lo último que tengo)':'')+'. Pronóstico de Open-Meteo.';
+wxd.innerHTML='<tr><th>Día</th><th>Mín</th><th>Máx</th><th>Lluvia</th><th>Viento</th></tr>'+d.time.map((t,i)=>`<tr><td>${new Date(t+'T12:00:00').toLocaleDateString('es-AR',{weekday:'short',day:'numeric'})}</td><td>${Math.round(d.temperature_2m_min[i])}°</td><td>${Math.round(d.temperature_2m_max[i])}°</td><td>${Math.round(d.precipitation_sum[i])} mm</td><td>${Math.round(d.wind_speed_10m_max[i])} km/h</td></tr>`).join('');
+WXA=alertas(d)}else{const t=TIP[nm];wxn.textContent=`Valores típicos de ${MN[nm]}: ${t[0]}° máx. / ${t[1]+f[2]}° mín. · lluvia unos ${LLU[nm]} mm en el mes`;
+wxs.textContent='Sin clima en vivo: '+(fallo?'no hay conexión o este lugar no permite consultarlo.':'tocá Actualizar.')+' Son valores aproximados.';wxd.innerHTML=''}
+wxa.innerHTML=ok?(WXA.length?WXA.map(a=>`<span class="al" style="background:${a[0]}">${a[1]}</span>`).join(''):'<span class="al" style="background:var(--ok)">Sin alertas en los próximos 5 días.</span>'):'';
+WXA=WXA.map(a=>a[1]);tareas()}
+async function cargarClima(){const z=zk(),f=ZON[z];wxs.textContent='Consultando el clima...';let fallo=false;
+try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${f[0]}&longitude=${f[1]}&current=temperature_2m,wind_speed_10m,precipitation&daily=temperature_2m_min,temperature_2m_max,precipitation_sum,wind_speed_10m_max&timezone=America%2FArgentina%2FBuenos_Aires&forecast_days=7`);if(!r.ok)throw 0;WXD={t:Date.now(),k:z,j:await r.json()};try{localStorage.setItem(WKC,JSON.stringify(WXD))}catch(e){}}catch(e){fallo=true}
+pintarClima(fallo)}
+function abrirBienvenida(){wz.value=PER?PER.z:'sur';if(PER&&PER.l)wl.value=PER.l;wlw.style.display=wz.value=='sur'?'block':'none';wel.classList.remove('hide')}
+wz.onchange=()=>{wlw.style.display=wz.value=='sur'?'block':'none'};
+wok.onclick=()=>{PER={z:wz.value,l:wl.value};try{localStorage.setItem(PK,JSON.stringify(PER))}catch(e){}wel.classList.add('hide');cargarClima()};
+wxz.onclick=abrirBienvenida;wxb.onclick=cargarClima;
+if(!PER)abrirBienvenida();pintarClima(false);cargarClima();
+updateDashboard();
+
+
+f1();f2();
+
+(function(){try{
+const MF={name:'Mi Huerta en Varela',short_name:'HuertaVarela',start_url:'.',display:'standalone',background_color:'#eef2e8',theme_color:'#173f24',lang:'es'};
+function icon(sz){const c=document.createElement('canvas');c.width=c.height=sz;const x=c.getContext('2d');x.fillStyle='#173f24';x.fillRect(0,0,sz,sz);x.font=Math.round(sz*0.6)+'px "Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('🌿',sz/2,sz*0.54);return c.toDataURL('image/png')}
+const i192=icon(192),i512=icon(512),mf=document.getElementById('mf');
+const ati=document.querySelector('link[rel="apple-touch-icon"]');if(ati)ati.href=i192;
+const fav=document.createElement('link');fav.rel='icon';fav.href=i192;document.head.appendChild(fav);
+const hosted=mf&&(mf.getAttribute('href')||'').indexOf('data:')!==0;
+if(mf&&!hosted){MF.icons=[{src:i192,sizes:'192x192',type:'image/png',purpose:'any'},{src:i512,sizes:'512x512',type:'image/png',purpose:'any'}];mf.href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(MF))}
+let dp=null;const bar=document.getElementById('pwaBar'),btn=document.getElementById('pwaBtn');
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;bar.classList.remove('hide')});
+btn.onclick=async()=>{if(!dp)return;dp.prompt();try{await dp.userChoice}catch(_){}dp=null;bar.classList.add('hide')};
+window.addEventListener('appinstalled',()=>bar.classList.add('hide'));
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){fetch('sw.js',{method:'HEAD'}).then(r=>{if(r.ok)navigator.serviceWorker.register('sw.js')}).catch(()=>{})}
+}catch(e){}})();
+</script>
+</body>
+</html>
