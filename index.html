@@ -95,6 +95,7 @@ details{border:1px solid var(--line);border-radius:12px;padding:9px 11px;backgro
 <button role="tab" aria-selected="false" data-t="sem">Esta semana</button>
 <button role="tab" aria-selected="false" data-t="mes">Este mes</button>
 <button role="tab" aria-selected="false" data-t="cal">🧮 Calculadora</button>
+<button role="tab" aria-selected="false" data-t="bio">🧴 Bioinsumos y Remedios Orgánicos</button>
 <button role="tab" aria-selected="false" data-t="fue">📚 Fuentes</button>
 <button role="tab" aria-selected="false" data-t="reg">Mi registro</button>
 </nav>
@@ -172,6 +173,13 @@ details{border:1px solid var(--line);border-radius:12px;padding:9px 11px;backgro
 <div class="grid" id="kg" style="grid-template-columns:1fr;max-width:720px"></div>
 </section>
 
+<section id="bio" class="hide">
+<h2>Bioinsumos y remedios orgánicos</h2>
+<p class="note"><b>Antes de usar:</b> las recetas son orientativas. Probá primero en pocas hojas, aplicá al atardecer, evitá las flores con abejas y respetá los días antes de cosechar. Si comprás un producto, seguí la etiqueta. Usá guantes y guardalo lejos de chicos y mascotas.</p>
+<div class="bar" id="bch"></div>
+<div class="grid" id="bgr"></div>
+</section>
+
 <section id="fue" class="hide">
 <h2>Fuentes por planta</h2>
 <p class="note">Las distancias, ciclos y épocas de siembra se contrastaron con el Planificador ProHuerta del INTA (AMBA) y otras fuentes. Plagas, pH del suelo, rinde por planta y tamaño de maceta <b>no tienen fuente verificada</b> en la mayoría de los casos. Sirven como orientación.</p>
@@ -182,7 +190,7 @@ details{border:1px solid var(--line);border-radius:12px;padding:9px 11px;backgro
 <section id="reg" class="hide">
 <h2>Mi registro de siembras</h2>
 <p class="note">Anotá qué plantaste, dónde y cuándo. La página calcula la cosecha estimada y te avisa si repetís el mismo grupo en un sector en menos de 3 años. Se guarda en este navegador: si lo abrís en otro equipo o desde el archivo descargado, el registro empieza de cero.</p>
-<div class="bar"><select id="rp" aria-label="Planta"></select><select id="rs" aria-label="Sector"></select><select id="racc" aria-label="Acción"><option>Siembra</option><option>Trasplante</option><option>Cosecha</option></select><input type="date" id="rd" aria-label="Fecha" style="flex:0 1 160px"><input type="number" id="rq" min="1" value="1" aria-label="Cantidad" style="flex:0 1 90px"><input type="file" id="rf" accept="image/*" aria-label="Foto" style="flex:1 1 220px"><input id="rn" placeholder="Notas (si anotás lluvia o tormenta, te aviso por hongos)" style="flex:1 1 240px"><button class="chip" id="ra" style="background:var(--ok);color:#fff;border-color:var(--ok)">Agregar</button></div>
+<div class="bar"><select id="rp" aria-label="Planta"></select><select id="rs" aria-label="Sector"></select><select id="racc" aria-label="Acción"><option>Siembra</option><option>Trasplante</option><option>Cosecha</option><option>Aplicación de Bioinsumo</option></select><input type="date" id="rd" aria-label="Fecha" style="flex:0 1 160px"><input type="number" id="rq" min="1" value="1" aria-label="Cantidad" style="flex:0 1 90px"><input type="file" id="rf" accept="image/*" aria-label="Foto" style="flex:1 1 220px"><input id="rn" placeholder="Notas (si anotás lluvia o tormenta, te aviso por hongos)" style="flex:1 1 240px"><button class="chip" id="ra" style="background:var(--ok);color:#fff;border-color:var(--ok)">Agregar</button></div>
 <p class="note" id="rw" style="color:var(--no)"></p><p class="note" id="rfc"></p><div class="bar"><button class="chip" id="bx">Guardar copia de seguridad</button><label class="chip" style="cursor:pointer">Restaurar copia<input type="file" id="bi" accept=".json,application/json" hidden></label><span id="bm" class="note" style="padding:0"></span></div>
 <div class="grid" id="rl"></div>
 </section>
@@ -322,7 +330,7 @@ fam.innerHTML='<button class="chip" data-g="all" aria-pressed="true">Todos los g
 document.querySelectorAll('.chip[data-f]').forEach(b=>b.onclick=()=>{b.parentNode.querySelectorAll('.chip[data-f]').forEach(x=>x.setAttribute('aria-pressed',x==b));f1();f2()});
 fam.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{fg=b.dataset.g;fam.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x==b));f2()});
 q1.oninput=f1;q2.oninput=f2;
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x==b));['inicio','col','sue','rot','cic','sem','mes','cal','fue','reg'].forEach(i=>document.getElementById(i).classList.toggle('hide',i!=b.dataset.t))});
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x==b));['inicio','col','sue','rot','cic','sem','mes','cal','bio','fue','reg'].forEach(i=>document.getElementById(i).classList.toggle('hide',i!=b.dataset.t))});
 
 const cell=(k)=>`<td class="g" style="background:${GR[k][1]}">${GR[k][0]}</td>`;
 const o=['sol','cuc','hoj','ceb'];
@@ -471,13 +479,13 @@ rs.innerHTML=SECS.map(n=>`<option>${n}</option>`).join('');
 rd.value=new Date().toISOString().slice(0,10);
 function dias(n){const r=SUE.find(x=>x[0]==n);if(!r)return null;const m=r[5].match(/(\d+(?:,\d+)?)/);if(!m)return null;const v=parseFloat(m[1].replace(',','.'));return Math.round(/año/.test(r[5])?v*365:/mes/.test(r[5])?v*30:v)}
 const fm=d=>new Date(d).toLocaleDateString('es-AR',{day:'numeric',month:'short',year:'numeric'});
-function regR(){rfc.textContent=Object.keys(FOT).length+' fotos guardadas (entran unas 30 a 50 en este navegador).';rl.innerHTML=REG.length?[...REG].sort((a,b)=>b.d.localeCompare(a.d)).map(r=>{const k=r.a=='Cosecha'?null:dias(r.n),t=new Date(r.d),now=Date.now(),pas=Math.round((now-t)/864e5);let est=r.a=='Cosecha'?'Cosecha registrada':'Perenne o cosecha continua';let bar='';if(k){const e=new Date(t.getTime()+k*864e5),f=Math.round((e-now)/864e5);est=f>0?`Cosecha estimada: ${fm(e)} (faltan ${f} días)`:`Lista para cosechar desde ${fm(e)}`;bar=`<div class="bd"><i style="width:${Math.min(100,Math.max(0,pas/k*100))}%"></i></div>`}
+function regR(){rfc.textContent=Object.keys(FOT).length+' fotos guardadas (entran unas 30 a 50 en este navegador).';rl.innerHTML=REG.length?[...REG].sort((a,b)=>b.d.localeCompare(a.d)).map(r=>{const k=(r.a=='Cosecha'||r.a=='Aplicación de Bioinsumo')?null:dias(r.n),t=new Date(r.d),now=Date.now(),pas=Math.round((now-t)/864e5);let est=r.a=='Cosecha'?'Cosecha registrada':r.a=='Aplicación de Bioinsumo'?'Aplicación registrada':'Perenne o cosecha continua';let bar='';if(k){const e=new Date(t.getTime()+k*864e5),f=Math.round((e-now)/864e5);est=f>0?`Cosecha estimada: ${fm(e)} (faltan ${f} días)`:`Lista para cosechar desde ${fm(e)}`;bar=`<div class="bd"><i style="width:${Math.min(100,Math.max(0,pas/k*100))}%"></i></div>`}
 return `<article class="card" style="--c:${GR[grpOf(r.n)]?GR[grpOf(r.n)][1]:'var(--g3)'}"><button class="del" data-id="${r.id}">Borrar</button><h3>${r.n}</h3><span class="tag">${r.s}</span> <span class="nm">${r.a||'Siembra'}${r.q?' · '+r.q:''}</span><p style="margin:0">${fm(r.d)} (hace ${Math.max(0,pas)} días)</p>${r.nt?`<p style="margin:4px 0;font-style:italic;font-size:14px">${r.nt.replace(/</g,'&lt;')}</p>`:''}${bar}<p style="margin:0;color:var(--mut);font-size:14px">${est}</p>${FOT[r.id]?`<img src="${FOT[r.id]}" alt="Foto de ${r.n}" style="width:100%;border-radius:8px;margin-top:8px">`:''}</article>`}).join(''):'<p style="padding:0 18px">Todavía no anotaste nada. Elegí una planta, un sector y la fecha, y tocá Agregar.</p>';
 rl.querySelectorAll('.del').forEach(b=>b.onclick=()=>{REG=REG.filter(r=>r.id!=b.dataset.id);if(FOT[b.dataset.id]){delete FOT[b.dataset.id];try{localStorage.setItem(FK,JSON.stringify(FOT))}catch(e){}}sv();regR();tareas()})}
 ra.onclick=async()=>{const n=rp.value,sc=rs.value,d=rd.value,g=grpOf(n);if(!d)return;
 const rep=REG.find(r=>r.s==sc&&sc!='Maceta o colgante'&&g!='fij'&&g!='aro'&&grpOf(r.n)==g&&r.n!=n||r.s==sc&&sc!='Maceta o colgante'&&g!='fij'&&g!='aro'&&grpOf(r.n)==g&&Math.abs(new Date(r.d)-new Date(d))<1095*864e5);
 const fam=REG.find(r=>r.s==sc&&sc!='Maceta o colgante'&&g!='fij'&&g!='aro'&&grpOf(r.n)==g&&Math.abs(new Date(r.d)-new Date(d))<1095*864e5);
-rw.textContent=fam&&racc.value!='Cosecha'?`Ojo: en ${sc} ya anotaste ${fam.n} (${GR[g][0]}) hace menos de 3 años. Conviene rotar a otro grupo.`:'';
+rw.textContent=fam&&racc.value!='Cosecha'&&racc.value!='Aplicación de Bioinsumo'?`Ojo: en ${sc} ya anotaste ${fam.n} (${GR[g][0]}) hace menos de 3 años. Conviene rotar a otro grupo.`:'';
 const en={id:Date.now(),n,s:sc,d,a:racc.value,q:rq.value,nt:rn.value.trim()};
 if(rf.files&&rf.files[0]){try{FOT[en.id]=await shrink(rf.files[0]);localStorage.setItem(FK,JSON.stringify(FOT))}catch(e){delete FOT[en.id];rw.textContent=(rw.textContent+' La foto no entró (espacio lleno o no se pudo leer). El registro sí se guardó.').trim()}}
 REG.push(en);rn.value='';rf.value='';sv();regR();tareas()};
@@ -485,7 +493,7 @@ mesR();regR();
 const TK='huerta-tareas-v1';let DONE={};try{DONE=JSON.parse(localStorage.getItem(TK)||'{}')}catch(e){}
 const FIJ=[['Regar temprano y al pie','Abrir las ventilaciones del invernadero','Revisar el envés de las hojas: pulgones y arañuela'],['Hacer almácigos de crucíferas','Sumar compost a los sectores libres','Poner malla antiinsectos'],['Cubrir las plantas sensibles antes de la helada','Ventilar el invernadero al mediodía','Regar poco y a media mañana'],['Trasplantar almácigos cuando pase el riesgo de helada','Poner tutores a tomates, pepinos y arvejas','Revisar babosas y caracoles']];
 const ESTAC=[0,0,1,1,1,2,2,2,3,3,3,0];
-const est=r=>{if(r.a=='Cosecha')return null;const k=dias(r.n);return k?new Date(new Date(r.d).getTime()+k*864e5):null};
+const est=r=>{if(r.a=='Cosecha'||r.a=='Aplicación de Bioinsumo')return null;const k=dias(r.n);return k?new Date(new Date(r.d).getTime()+k*864e5):null};
 function tareas(){const h=new Date();h.setHours(0,0,0,0);const f=new Date(h.getTime()+6*864e5),ms=[...new Set([h.getMonth(),f.getMonth()])],wk=h.toISOString().slice(0,10);
 swk.textContent=`Del ${fm(h)} al ${fm(f)}. Se arma con el ciclo del año, tu registro y la estación.`;
 const u=a=>[...new Set(a)],has=(a,cs)=>ms.some(m=>cs.includes(a[1][m]));
@@ -526,7 +534,7 @@ function generarICS(){
  // 1) Registro personal: siembra + cosecha estimada.
  REG.forEach(r=>{
    const si=new Date(r.d+'T00:00:00');
-   eventos.push(icsEvent('🌱 Siembra: '+r.n,si,`Sector: ${r.s}. Registrado en Mi huerta en Varela.`,uid()));
+   eventos.push(icsEvent((({Siembra:'🌱',Trasplante:'🪴',Cosecha:'🧺','Aplicación de Bioinsumo':'🧴'})[r.a||'Siembra']||'🌱')+' '+(r.a||'Siembra')+': '+r.n,si,`Sector: ${r.s}. Registrado en Mi huerta en Varela.`,uid()));
    const tf=TR[r.n];if(r.a=='Siembra'&&tf)eventos.push(icsEvent('🪴 Trasplantar: '+r.n,new Date(si.getTime()+tf*864e5),`Sector: ${r.s}. Con 4 a 6 hojas verdaderas.`,uid()));
    const e=est(r);
    if(e) eventos.push(icsEvent('🧺 Cosecha estimada: '+r.n,e,`Sector: ${r.s}. Fecha calculada a partir de la siembra del ${fm(si)}.`,uid()));
@@ -625,6 +633,20 @@ fgr.innerHTML=nm.map(n=>{const st=FP.includes(n)?'ok':FPAR.includes(n)?'parcial'
 return `<article class="card" style="--c:${col}"><h3>${x.n}</h3><span class="tag">${tx}</span><div>${[...x.cs].map(c=>`<a href="${SRC[c][1]}" target="_blank" rel="noopener" class="nm">${SRC[c][0]}</a>`).join('')}</div></article>`}).join('')}
 document.querySelectorAll('#fue .chip').forEach(b=>b.onclick=()=>{ffs=b.dataset.f;document.querySelectorAll('#fue .chip').forEach(x=>x.setAttribute('aria-pressed',x==b));fuenteR()});
 fuenteR();f1();f2();calcR();
+const BIO=[
+{t:'Jabón potásico + neem',k:'insectos',para:'Pulgones, trips y mosca blanca.',dosis:'10 ml de jabón potásico + 5 ml de aceite de neem por litro de agua.',pasos:'Disolvé primero el jabón en un poco de agua tibia, agregá el neem y completá hasta 1 litro. Agitá antes de usar.',cuando:'Al atardecer, mojando también el envés de las hojas. Repetí a los 5-7 días si sigue la plaga.',prec:'Probá en pocas hojas antes. No apliques con sol fuerte ni con abejas en flor. Seguí la etiqueta de tu neem.',fu:'Dosis indicada por vos. Sin fuente verificada.',l:[]},
+{t:'Caldo bordelés (cobre)',k:'hongos',para:'Prevención de tizón, mildiu y otros hongos en tomate, morrón, papa y zapallos.',dosis:'80 g de sulfato de cobre + 80 g de cal viva en 20 litros de agua (4 g de cada uno por litro). Se aplica sin diluir.',pasos:'Disolvé la cal en 18 L de agua y el sulfato en 2 L, en baldes plásticos y por separado. Volcá el sulfato disuelto sobre la cal, nunca al revés. Revolvé, colá y usalo el mismo día.',cuando:'Preventivo, después de lluvias o tormentas fuertes, cuando las hojas se secan y sin sol fuerte. Es un criterio general, no un dato local de Varela. Los textos consultados hablan de 1 a 3 aplicaciones por temporada.',prec:'Usá guantes, lentes y barbijo, y recipientes no metálicos. El cobre se acumula en el suelo: no abuses ni apliques sobre frutos a punto de cosecha. Las fuentes son del INTA de Nicaragua, no de Argentina.',fu:'Dosis y preparación: INTA Nicaragua. Momento de aplicación: criterio general, sin fuente local.',l:[['INTA Nicaragua: preparación del caldo bordelés','https://inta.gob.ni/wp-content/uploads/2023/11/Preparacion-del-caldo-bordeles.pdf'],['INTA Nicaragua: caldos minerales','https://www.jica.go.jp/nicaragua/espanol/office/others/c8h0vm000001q4bc-att/46_instrucciones_03.pdf'],['Fungicidas orgánicos (Portal Frutícola)','https://www.portalfruticola.com/?p=621881']]},
+{t:'Purín de ortiga',k:'nutrición',para:'Repelente y preventivo de orugas, minador, cogollero y ácaros. También refuerza las defensas de la planta.',dosis:'Diluir 1 parte de purín en 9 de agua (10 %).',pasos:'Llená hasta la mitad un recipiente de 20 L con tallos y hojas de ortiga (sin raíces ni flores) y completá con agua. Usá un recipiente no metálico, con tapa floja, y revolvé cada día. Listo en unos 15 días. Colalo antes de aplicar.',cuando:'En riego foliar o al pie, cada 10 a 15 días en temporada de crecimiento. Si dudás, empezá más diluido.',prec:'Huele fuerte: guardalo lejos de la casa. Usá guantes.',fu:'Receta y dilución: INTA (vía Bichos de Campo). Tiempo de fermentación: nota de El Espectador.',l:[['Recetas de purines del INTA','https://bichosdecampo.com/cuatro-recetas-de-purines-para-usar-contra-las-plagas-que-atacan-las-huertas-via-inta'],['Cinco remedios naturales (El Espectador)','https://www.elespectador.com/la-huerta/cinco-remedios-naturales-para-plantas-como-usarlos-de-forma-segura-y-efectiva/']]},
+{t:'Cola de caballo',k:'hongos',para:'Fungicida preventivo, por su contenido de sílice. Se usa contra oídio y otros hongos. El INTA también la recomienda contra pulgones y araña roja. Para roya no encontré un dato propio.',dosis:'Diluir al 30 %: 3 partes de preparado + 7 de agua.',pasos:'Cortá 100 g de planta fresca en trozos, agregá 1 litro de agua, dejá reposar 24 horas y hervila de 15 a 30 minutos. Colá y diluí.',cuando:'Preventivo, una vez por semana. Renovalo cada 5 a 7 días, porque dura poco.',prec:'Conseguí la planta correcta (Equisetum arvense).',fu:'Receta: INTA (vía Bichos de Campo). Dilución: Portal Frutícola.',l:[['Recetas de purines del INTA','https://bichosdecampo.com/cuatro-recetas-de-purines-para-usar-contra-las-plagas-que-atacan-las-huertas-via-inta'],['Fungicidas orgánicos (Portal Frutícola)','https://www.portalfruticola.com/?p=621881']]},
+{t:'Ajo y chiles',k:'insectos',para:'Repelente de pulgones, mosca blanca, cochinillas, hormigas y oruga cogollera.',dosis:'Se mezclan las dos preparaciones y se completa con 10 litros de agua.',pasos:'Machacá 1/4 kg de ají picante, agregá 2 L de agua y dejá reposar un día. Aparte, disolvé 1/4 de pan de jabón en 1 L de agua y filtrá. Mezclá ambas y completá con 10 L de agua. Podés sumar ajo machacado (sin fuente).',cuando:'Al atardecer, sobre las hojas, cuando aparecen las plagas. Repetí si hace falta.',prec:'Usá guantes y no te toques los ojos. No apliques sobre flores.',fu:'Receta con ají y jabón: INTA (vía Bichos de Campo). El ajo es un agregado sin fuente verificada.',l:[['Recetas de purines del INTA','https://bichosdecampo.com/cuatro-recetas-de-purines-para-usar-contra-las-plagas-que-atacan-las-huertas-via-inta']]},
+{t:'Trampas de cerveza',k:'babosas',para:'Control de babosas y caracoles al pie del cantero, sobre todo en épocas de lluvia.',dosis:'2 a 3 cm de cerveza en un recipiente bajo.',pasos:'Enterrá un recipiente (por ejemplo un pote de yogur) hasta que el borde quede al ras del suelo y ponele la cerveza. Colocá una cada 1 o 2 m², cerca de lechuga, acelga y plantas de hoja.',cuando:'Revisalas y cambiá la cerveza cada 2 o 3 días, y después de lluvias.',prec:'Tapalas con una teja o tapa floja para que no se llenen de agua.',fu:'Criterio general. Sin fuente verificada.',l:[]}];
+const BK={todos:'Todos',hongos:'Hongos',insectos:'Insectos',babosas:'Babosas',nutrición:'Nutrición'};let bk='todos';
+function bioR(){bch.innerHTML=Object.entries(BK).map(([k,v])=>`<button class="chip" data-k="${k}" aria-pressed="${k==bk}">${v}</button>`).join('');
+bch.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{bk=b.dataset.k;bioR()});
+bgr.innerHTML=BIO.map((b,i)=>({b,i})).filter(x=>bk=='todos'||x.b.k==bk).map(({b,i})=>`<article class="card" style="--c:${{hongos:'var(--g5)',insectos:'var(--g1)',babosas:'var(--g6)',nutrición:'var(--g3)'}[b.k]}"><h3>${b.t}</h3><span class="tag">${BK[b.k]}</span><p style="margin:4px 0"><b>Para qué:</b> ${b.para}</p><p style="margin:4px 0"><b>Dosis:</b> ${b.dosis}</p><details><summary>Preparación, cuándo y precauciones</summary><dl><dt>Preparación</dt><dd>${b.pasos}</dd><dt>Cuándo</dt><dd>${b.cuando}</dd><dt>Cuidado</dt><dd>${b.prec}</dd><dt>Fuente</dt><dd>${b.fu}${b.l.map(l=>`<br><a href="${l[1]}" target="_blank" rel="noopener">${l[0]}</a>`).join('')}</dd></dl></details><button class="chip" data-i="${i}" style="margin-top:8px">Anotar aplicación</button></article>`).join('');
+bgr.querySelectorAll('button[data-i]').forEach(x=>x.onclick=()=>{document.querySelector('nav button[data-t="reg"]').click();racc.value='Aplicación de Bioinsumo';rn.value=BIO[+x.dataset.i].t;window.scrollTo(0,0)})}
+bioR();
+
 
 bx.onclick=async()=>{const data=JSON.stringify({v:1,registro:REG,fotos:FOT});try{if(DL){await DL.save({filename:'huerta-copia-seguridad.json',data});bm.textContent='Copia guardada.'}else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));a.download='huerta-copia-seguridad.json';a.click();bm.textContent='Descarga iniciada.'}}catch(e){bm.textContent=e&&e.code=='declined'?'Cancelaste la descarga.':'No se pudo guardar desde esta vista.'}};
 bi.onchange=()=>{const f=bi.files[0];if(!f)return;const fr=new FileReader();fr.onload=()=>{try{const o=JSON.parse(fr.result);if(!Array.isArray(o.registro))throw 0;const ids=new Set(REG.map(r=>r.id));o.registro.forEach(r=>{if(!ids.has(r.id))REG.push(r)});Object.assign(FOT,o.fotos||{});sv();try{localStorage.setItem(FK,JSON.stringify(FOT))}catch(e){}regR();tareas();updateDashboard();bm.textContent='Copia restaurada ('+o.registro.length+' registros).'}catch(e){bm.textContent='El archivo no es una copia válida.'}};fr.readAsText(f)};
@@ -675,7 +697,7 @@ let dp=null;const bar=document.getElementById('pwaBar'),btn=document.getElementB
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;bar.classList.remove('hide')});
 btn.onclick=async()=>{if(!dp)return;dp.prompt();try{await dp.userChoice}catch(_){}dp=null;bar.classList.add('hide')};
 window.addEventListener('appinstalled',()=>bar.classList.add('hide'));
-if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){fetch('sw.js',{method:'HEAD'}).then(r=>{if(r.ok)navigator.serviceWorker.register('sw.js')}).catch(()=>{})}
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
 }catch(e){}})();
 </script>
 </body>

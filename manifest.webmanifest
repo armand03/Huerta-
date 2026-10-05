@@ -21,5 +21,12 @@
    "type": "image/png",
    "purpose": "any maskable"
   }
- ]
+ ],
+ "description": "Calendario de siembra, clima, calculadora y registro para tu huerta en Varela.",
+ "categories": [
+  "lifestyle",
+  "productivity"
+ ],
+ "orientation": "portrait",
+ "prefer_related_applications": false
 }
